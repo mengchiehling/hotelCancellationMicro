@@ -1,0 +1,64 @@
+import os
+import yaml
+
+from src.api import logger
+from src.io.path_definition import get_file
+from src.common.load_data import retrieve_hyperparameter_files
+
+
+def load_pbounds():
+
+    pbounds = load_yaml_file(get_file(os.path.join('config', 'training_config.yml')))['pbounds']
+    for key, value in pbounds.items():
+        pbounds[key] = eval(value)
+
+    return pbounds
+
+
+def load_x_labels(configuration: str):
+
+    features_configuration = \
+    load_yaml_file(get_file(os.path.join('config', 'training_config.yml')))['features_configuration'][configuration]
+    x_labels = []
+    for _, values in features_configuration.items():
+        if type(values) == str:
+            x_labels.append(values)
+        else:
+            x_labels += values
+
+    return x_labels
+
+
+def load_yaml_file(filepath: str):
+
+    with open(filepath, 'r') as stream:
+        map_ = yaml.safe_load(stream)
+
+    return map_
+
+
+def load_optimized_parameters(algorithm: str, last: bool=False):
+
+    logger.debug(f"loading optimized parameters for algorithm={algorithm}")
+
+    files = retrieve_hyperparameter_files(algorithm=algorithm, last=last)
+
+    target_max = 0
+
+    for f in files:
+        with open(f, 'rb') as f:
+            while True:
+                data = f.readline()
+                if not data:
+                    break
+                data = eval(data)
+                target = data['target']
+                if target > target_max:
+                    target_max = target
+                    params = data['params']
+
+    return params, target
+#
+# if __name__ == "__main__":
+#
+#     load_optimized_parameters(algorithm='unification')
