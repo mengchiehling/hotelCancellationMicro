@@ -1,0 +1,15 @@
+pandas
+numpy
+jupyterlab
+tqdm
+scikit-learn==1.0.2
+openpyxl
+pyyaml
+nltk
+pip
+xlsxwriter
+scipy==1.7.1
+bayesian-optimization
+lightgbm
+psycopg2
+spacy
