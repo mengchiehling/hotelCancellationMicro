@@ -5,6 +5,8 @@ from typing import List
 
 import pandas as pd
 
+from src.api import logger
+from src import config
 from src.io.path_definition import get_datafetch
 
 
@@ -12,7 +14,10 @@ def retrieve_hyperparameter_files(algorithm: str, last: bool=False) -> List:
 
     dir_ = os.path.join(get_datafetch(), 'optimization')
 
-    search_pattern = 'logs_' + algorithm + "_[\d]{8}-[\d]{4}.json"
+    if isinstance(config.hotel_ids, list):
+        search_pattern = 'logs_' + algorithm + f"_{config.hotel_ids[0]}" + "_[\d]{8}-[\d]{4}.json"
+    else:
+        search_pattern = 'logs_' + algorithm + "_unification_[\d]{8}-[\d]{4}.json"
 
     logger.debug(f"retrieve file pattern {search_pattern}")
 
@@ -34,16 +39,14 @@ def retrieve_hyperparameter_files(algorithm: str, last: bool=False) -> List:
 def load_data() -> pd.DataFrame:
 
     filename = os.path.join(get_datafetch(), '訂單資料_20221202.csv')
-    df_booking_info = pd.read_csv(filename, index_col=0)
+    booking_data = pd.read_csv(filename, index_col=0)
+    booking_data.set_index('number', inplace=True)
 
     filename = os.path.join(get_datafetch(), '訂房資料_20221202.csv')
-    df_booking_detail = pd.read_csv(filename, index_col=0)
+    room_data = pd.read_csv(filename, index_col=0)
+    room_data = room_data.drop_duplicates(subset=['number'], keep='first').set_index('number')
 
-    columns = ['platform', 'pms_room_type_id', 'lead_time', 'lead_time_range', 'weekday', 'week', 'month', 'year',
-               'season', 'holiday', 'status']
+    booking_data = booking_data.join(room_data[['lead_time', 'platform', 'season', 'holiday', 'weekday']], how='inner')
 
-    df_booking_info = df_booking_info.join(df_booking_detail[columns].drop_duplicates(subset=['number'], keep='first'),
-                                           on=['number'])
-
-    return df_booking_info
+    return booking_data
 

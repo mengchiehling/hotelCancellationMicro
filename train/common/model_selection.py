@@ -7,9 +7,11 @@ import numpy as np
 from sklearn.model_selection import StratifiedKFold, train_test_split
 from sklearn.metrics import accuracy_score
 
+from src import config
 
-def cross_validation(algorithm: str, data: pd.DataFrame, x_labels: List[str], y_label: str, optimization: bool,
-                     test_size: float, configuration: str, **kwargs) -> Union[float, np.ndarray]:
+
+def cross_validation(data: pd.DataFrame, x_labels: List[str], y_label: str, optimization: bool,
+                     test_size: float, **kwargs) -> Union[float, np.ndarray]:
 
     """
     Cross validation training process
@@ -24,7 +26,7 @@ def cross_validation(algorithm: str, data: pd.DataFrame, x_labels: List[str], y_
       len(eval_dataset)  kwargs: additional hyperparameters for the algorithm
     """
 
-    module = importlib.import_module(f'train.logic.classification.training_process_{algorithm}')
+    module = importlib.import_module(f'train.logic.training_process_{config.algorithm}')
     process = getattr(module, 'process')
 
     X = data
@@ -43,7 +45,7 @@ def cross_validation(algorithm: str, data: pd.DataFrame, x_labels: List[str], y_
         y_train = X_train[y_label]
         y_test = X_test[y_label]
 
-        model = process(X_train[x_labels], y_train, test_size=test_size, configuration=configuration, **kwargs)
+        model = process(X_train[x_labels], y_train, test_size=test_size,  **kwargs)
 
         y_temp = model.predict(X_test[x_labels])
 

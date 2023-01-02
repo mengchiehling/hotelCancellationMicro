@@ -2,6 +2,7 @@ import os
 import yaml
 
 from src.api import logger
+from src import config
 from src.io.path_definition import get_file
 from src.common.load_data import retrieve_hyperparameter_files
 
@@ -20,7 +21,8 @@ def load_x_labels(configuration: str):
     features_configuration = \
     load_yaml_file(get_file(os.path.join('config', 'training_config.yml')))['features_configuration'][configuration]
     x_labels = []
-    for _, values in features_configuration.items():
+    for key, values in features_configuration.items():
+        config.features_configuration[key] = values
         if type(values) == str:
             x_labels.append(values)
         else:

@@ -19,5 +19,5 @@ pbounds:
 
 features_configuration:
   A:
-    onehot: ['platform', 'gender', 'currency_code', 'adults', 'children', 'pms_hotel_id','pms_room_type_id', 'weekday', 'month', 'year', 'holiday', 'payment_method']
-    numerical: ['adults', 'children', 'lead_time', 'lead_time_range', 'price']
+    onehot: ['payment_type', 'nationality_code', 'gender', 'source', 'currency_code']
+    numerical: ['number_of_allpeople', 'total_stays_night', 'tax_rate', 'service_rate', 'price', 'lead_time']

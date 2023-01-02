@@ -1,28 +1,25 @@
 import os
 from typing import Union
 
+import numpy as np
 import pandas as pd
 from lightgbm import LGBMClassifier, early_stopping, log_evaluation
 from sklearn.feature_selection import chi2, SelectKBest
-from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import LabelEncoder, OneHotEncoder
+from sklearn.preprocessing import OneHotEncoder
 from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
 
-from src.io.path_definition import get_file
-from src.common.tools import load_yaml_file
+from src.config import features_configuration, class_weight
 
 
-def build_transformer_pipeline(configuration: str, stats=None) -> Union[ColumnTransformer, Pipeline]:
+def build_transformer_pipeline(stats=None) -> Union[ColumnTransformer, Pipeline]:
 
     """
 
     Returns:
         a scikit-learn pipeline
     """
-
-    features_configuration = load_yaml_file(get_file(os.path.join('config', 'training_config.yml')))['features_configuration'][configuration]
 
     transformers = []
     for key, value in features_configuration.items():
@@ -39,20 +36,27 @@ def build_transformer_pipeline(configuration: str, stats=None) -> Union[ColumnTr
     return feature_transformer
 
 
-def process(X: pd.Series, y: pd.Series, test_size: float, configuration: str, **kwargs):
+def process(X: pd.Series, y: pd.Series, test_size: float, **kwargs):
+    '''
+    For binary classfication, choose objective='binary'
+    :param X:
+    :param y:
+    :param test_size:
+    :param kwargs:
+    :return:
+    '''
 
-
-    feature_extractor = build_transformer_pipeline(stats=chi2, configuration=configuration)
+    feature_extractor = build_transformer_pipeline(stats=chi2)
 
     model =  Pipeline([('feature_extractor', feature_extractor),
-                       ('model', LGBMClassifier(boosting_type='gbdt', random_state=0, class_weight='balanced',
-                                                n_estimators=3000, objective='softmax', n_jobs=-1))
+                       ('model', LGBMClassifier(boosting_type='gbdt', random_state=0, class_weight=class_weight,
+                                                n_estimators=3000, objective='binary', n_jobs=-1))
                        ])
 
     k = kwargs.get('k', None)
     if k:
         k = int(k)
-        model.set_params(**{f"feature_extractor__feature_selector__feature_selector__k": k})
+        model.set_params(**{f"feature_extractor__feature_selector__k": k})
 
     reg_alpha = kwargs['reg_alpha']
     reg_lambda = kwargs['reg_lambda']
@@ -68,6 +72,7 @@ def process(X: pd.Series, y: pd.Series, test_size: float, configuration: str, **
                         })
 
     # ToDo replace with time series splitting
+    y = y.astype(np.int32).values
     X_train, X_val, y_train, y_val = train_test_split(X, y, stratify=y, test_size=test_size, random_state=42)
 
     callbacks = [early_stopping(stopping_rounds=100), log_evaluation(period=100)]
@@ -77,7 +82,7 @@ def process(X: pd.Series, y: pd.Series, test_size: float, configuration: str, **
         model_temp.fit_transform(X_train, y_train)
         eval_set = [(model_temp.transform(X_val), y_val)]
     except ValueError:
-        model.set_params(**{f"feature_extractor__feature_selector__feature_selector__k": 'all'})
+        model.set_params(**{f"feature_extractor__feature_selector__k": 'all'})
         model_temp = Pipeline(model.steps[:-1])
         model_temp.fit_transform(X_train, y_train)
         eval_set = [(model_temp.transform(X_val), y_val)]
@@ -86,6 +91,6 @@ def process(X: pd.Series, y: pd.Series, test_size: float, configuration: str, **
     # the last 100 rounds.
     # https://stackoverflow.com/questions/40329576/sklearn-pass-fit-parameters-to-xgboost-in-pipeline/55711752#55711752
 
-    model.fit(X_train, y_train, model__eval_set=eval_set, model__callbacks=callbacks, model__eval_metric=['softmax'])
+    model.fit(X_train, y_train, model__eval_set=eval_set, model__callbacks=callbacks, model__eval_metric=['binary'])
 
     return model
