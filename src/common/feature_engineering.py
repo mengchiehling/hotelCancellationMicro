@@ -12,8 +12,8 @@ def create_total_stays_night(df: pd.DataFrame):
 
 def create_number_of_allpeople(df: pd.DataFrame):
 
+    df['adults'].fillna(999, inplace=True)
     df["number_of_allpeople"] = df.adults + df.children
-
     filter = (df.adults == 0) & (df.children == 0)
 
     return df[~filter]
