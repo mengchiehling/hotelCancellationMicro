@@ -33,3 +33,19 @@ def create_new_currency_code(df: pd.DataFrame):
     df.loc[df['currency_code'] == 'TWD', 'new_currency_code'] = 1
 
     return df
+
+
+def create_if_comment(df: pd.DataFrame):
+
+    df['if_comment'] = ~pd.isnull(df['comment'])
+    df['if_comment'] = df['if_comment'].astype(int)
+
+    return df
+
+
+def create_check_in_month(df: pd.DataFrame):
+
+    df['check_in_month'] = pd.to_datetime(df['check_in'], errors='coerce')
+    df['check_in_month'] = df['check_in_month'].dt.month
+
+    return df

@@ -38,7 +38,7 @@ def retrieve_hyperparameter_files(algorithm: str, last: bool=False) -> List:
 
 def load_data() -> pd.DataFrame:
 
-    filename = os.path.join(get_datafetch(), '訂單資料_20221202.csv')
+    filename = os.path.join(get_datafetch(), '訂單資料_20221229.csv')
     booking_data = pd.read_csv(filename, index_col=0)
     booking_data.set_index('number', inplace=True)
 
@@ -47,6 +47,17 @@ def load_data() -> pd.DataFrame:
     room_data = room_data.drop_duplicates(subset=['number'], keep='first').set_index('number')
 
     booking_data = booking_data.join(room_data[['lead_time', 'platform', 'season', 'holiday', 'weekday']], how='inner')
+
+    filename = os.path.join(get_datafetch(), 'date_features.csv')
+    date_features = pd.read_csv(filename, index_col=0)
+    date_features['date'] = date_features['date'].apply(
+    lambda x: datetime.datetime.strptime(x, '%Y/%m/%d').strftime("%Y-%m-%d"))
+    booking_data = booking_data.merge(date_features, how='left', left_on='check_in', right_on='date')
+
+    filename = os.path.join(get_datafetch(), '房型資料_20221229.csv')
+    room_type_data = pd.read_csv(filename, index_col=0)
+    room_type_data1 = room_type_data.set_index(["room_type_id"])['type'].to_dict()
+    booking_data['type'] = booking_data['pms_room_type_id'].map(room_type_data1)
 
     return booking_data
 

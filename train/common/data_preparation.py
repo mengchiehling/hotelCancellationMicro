@@ -4,7 +4,7 @@ import pandas as pd
 
 from src.api import logger
 from src.common.load_data import load_data
-from src.common.feature_engineering import create_total_stays_night, create_number_of_allpeople, create_nationality_code
+from src.common.feature_engineering import create_total_stays_night, create_number_of_allpeople, create_nationality_code, create_if_comment, create_check_in_month
 
 def load_training_data(hotel_ids: Optional[List], remove_business_booking: bool=True) -> Tuple[pd.DataFrame, pd.Series]:
 
@@ -20,12 +20,13 @@ def load_training_data(hotel_ids: Optional[List], remove_business_booking: bool=
     if remove_business_booking:
         df = df[df["source"] != "BUSINESS_BOOKING"]
 
-    df = df[df["source"] != "BUSINESS_BOOKING"]
 
     # feature engineering:
     df = create_total_stays_night(df=df)
     df = create_number_of_allpeople(df=df)
     df = create_nationality_code(df=df)
+    df = create_if_comment(df=df)
+    df = create_check_in_month(df=df)
 
     df['label'] = 0
     df.loc[df['status'] == 'CHECKED_IN', 'label'] = 0

@@ -3,7 +3,7 @@ import os
 import numpy as np
 import pandas as pd
 from sklearn.metrics import accuracy_score, f1_score, recall_score, precision_score, confusion_matrix, \
-    mean_absolute_percentage_error
+    mean_absolute_percentage_error, roc_auc_score, roc_curve
 
 from src.api import logger
 from src.io.path_definition import get_datafetch
@@ -23,7 +23,9 @@ def run_mape_evaluation(df: pd.DataFrame):
 
 def run_evaluation(model, eval_dataset: pd.DataFrame, filename: str):
 
-    y_pred = model.predict(eval_dataset)
+    y_pred_proba = model.predict_proba(eval_dataset)
+    y_pred = (y_pred_proba > 0.5) * 1
+    #y_pred = model.predict(eval_dataset)
 
     eval_y = eval_dataset['label']
 
@@ -32,6 +34,7 @@ def run_evaluation(model, eval_dataset: pd.DataFrame, filename: str):
     recall = recall_score(eval_y, y_pred)
     precision = precision_score(eval_y, y_pred)
     cm = confusion_matrix(eval_y, y_pred)
+    auc = roc_auc_score(eval_y, y_pred_proba)
 
     logger.debug("測試準確度: {:.2f}".format(acc))
     logger.debug("-----------------------------")
@@ -40,6 +43,8 @@ def run_evaluation(model, eval_dataset: pd.DataFrame, filename: str):
     logger.debug("Recall值: {:.2f}".format(recall))
     logger.debug("-----------------------------")
     logger.debug("Precision值: {:.2f}".format(precision))
+    logger.debug("-----------------------------")
+    logger.debug("AUC值: {:.2f}".format(auc))
     logger.debug("-----------------------------")
     logger.debug("混淆矩陣如下: ")
     logger.debug("\n")
