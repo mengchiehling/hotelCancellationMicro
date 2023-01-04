@@ -15,9 +15,57 @@ pbounds:
   min_child_samples: (2, 10)
   num_leaves: (15, 100)
   min_df: (10, 30)
-  k: (80, 512)
+  k: (5,7) #(80, 512)
 
 features_configuration:
   A:
     onehot: ['payment_type', 'nationality_code', 'gender', 'source', 'currency_code']
+    numerical: ['number_of_allpeople', 'total_stays_night', 'tax_rate', 'service_rate', 'price']
+
+  B:
+    onehot: ['payment_type', 'nationality_code', 'gender', 'source', 'currency_code']
+    numerical: ['number_of_allpeople', 'total_stays_night', 'tax_rate', 'service_rate', 'price', 'if_comment']
+
+  C:
+    onehot: ['payment_type', 'nationality_code', 'gender', 'source', 'currency_code']
     numerical: ['number_of_allpeople', 'total_stays_night', 'tax_rate', 'service_rate', 'price', 'lead_time']
+
+  D:
+    onehot: ['payment_type', 'nationality_code', 'gender', 'source', 'currency_code']
+    numerical: ['number_of_allpeople', 'total_stays_night', 'tax_rate', 'service_rate', 'price',  'if_comment', 'lead_time']
+
+  E:
+    onehot: ['payment_type', 'nationality_code', 'gender', 'source', 'currency_code', 'season']
+    numerical: ['number_of_allpeople', 'total_stays_night', 'tax_rate', 'service_rate', 'price',  'if_comment', 'lead_time']
+
+  F:
+    onehot: ['payment_type', 'nationality_code', 'gender', 'source', 'currency_code', 'season', 'platform']
+    numerical: ['number_of_allpeople', 'total_stays_night', 'tax_rate', 'service_rate', 'price',  'if_comment', 'lead_time']
+
+  G:
+    onehot: [ 'payment_type', 'nationality_code', 'gender', 'source', 'currency_code', 'season', 'platform' , 'check_in_month']
+    numerical: [ 'number_of_allpeople', 'total_stays_night', 'tax_rate', 'service_rate', 'price',  'if_comment', 'lead_time' ]
+
+  H:
+    onehot: ['payment_type', 'nationality_code', 'gender', 'source', 'currency_code', 'season', 'platform', 'check_in_month','holiday']
+    numerical: ['number_of_allpeople', 'total_stays_night', 'tax_rate', 'service_rate', 'price', 'if_comment',  'lead_time']
+
+  I:
+    onehot: ['payment_type', 'nationality_code', 'gender', 'source', 'currency_code', 'season', 'platform', 'check_in_month','holiday','weekday']
+    numerical: ['number_of_allpeople', 'total_stays_night', 'tax_rate', 'service_rate', 'price', 'if_comment',  'lead_time']
+
+  J:
+    onehot: ['payment_type', 'nationality_code', 'gender', 'source', 'currency_code', 'season', 'platform', 'check_in_month','holiday','weekday', 'type']
+    numerical: ['number_of_allpeople', 'total_stays_night', 'tax_rate', 'service_rate', 'price', 'if_comment',  'lead_time']
+
+  K:
+    onehot: ['payment_type', 'nationality_code', 'gender', 'source', 'currency_code', 'season', 'platform', 'check_in_month','holiday','weekday', 'type']
+    numerical: ['number_of_allpeople', 'total_stays_night', 'tax_rate', 'service_rate', 'price', 'if_comment',  'lead_time', 'lead_time_range']
+
+  L:
+    onehot: ['payment_type', 'nationality_code', 'gender', 'source', 'currency_code', 'season', 'platform', 'check_in_month','holiday','weekday', 'type', 's_vecation', 'w_vecation']
+    numerical: ['number_of_allpeople', 'total_stays_night', 'tax_rate', 'service_rate', 'price', 'if_comment',  'lead_time']
+
+  M:
+    onehot: ['payment_type', 'nationality_code', 'gender', 'source', 'currency_code', 'season', 'platform', 'check_in_month','holiday','weekday', 'type', 'sp_date', 'midd', 'sallery', 'workingday', 'is_rest_day', 'vecation', 'is_event', 's_vecation', 'w_vecation']
+    numerical: ['number_of_allpeople', 'total_stays_night', 'tax_rate', 'service_rate', 'price', 'if_comment',  'lead_time', 'lead_time_range', 'days2vecation', 'vecation_days', 'Precp', 'PrecpHour', 'SunShine', 'Temperature']
