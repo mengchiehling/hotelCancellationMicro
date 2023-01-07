@@ -45,11 +45,11 @@ def process(X: pd.Series, y: pd.Series, test_size: float, **kwargs):
     :param kwargs:
     :return:
     '''
-
+    RANDOM_SEED = 42
     feature_extractor = build_transformer_pipeline(stats=chi2)
 
     model =  Pipeline([('feature_extractor', feature_extractor),
-                       ('model', LGBMClassifier(boosting_type='gbdt', random_state=0, class_weight=class_weight,
+                       ('model', LGBMClassifier(boosting_type='gbdt', random_state=RANDOM_SEED, class_weight=class_weight,
                                                 n_estimators=3000, objective='binary', n_jobs=-1))
                        ])
 
@@ -73,7 +73,7 @@ def process(X: pd.Series, y: pd.Series, test_size: float, **kwargs):
 
     # ToDo replace with time series splitting
     y = y.astype(np.int32).values
-    X_train, X_val, y_train, y_val = train_test_split(X, y, stratify=y, test_size=test_size, random_state=42)
+    X_train, X_val, y_train, y_val = train_test_split(X, y, stratify=y, test_size=test_size, random_state=RANDOM_SEED)
 
     callbacks = [early_stopping(stopping_rounds=100), log_evaluation(period=100)]
 

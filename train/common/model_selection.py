@@ -36,7 +36,8 @@ def cross_validation(data: pd.DataFrame, x_labels: List[str], y_label: str, opti
     y_true = []
 
     # ToDo: Switch to time series split
-    kfold = StratifiedKFold(n_splits=5, random_state=0, shuffle=True)
+    RANDOM_SEED = 42
+    kfold = StratifiedKFold(n_splits=5, random_state=RANDOM_SEED, shuffle=True)
 
     for train_index, test_index in kfold.split(X, y):
 

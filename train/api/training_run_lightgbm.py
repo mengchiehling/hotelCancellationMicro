@@ -20,9 +20,10 @@ from train.common.evaluation import run_evaluation
 
 def create_dataset(dataset: pd.DataFrame, test_size):
 
+    RANDOM_SEED = 42
     y = dataset['label']
     train_dataset, eval_dataset, train_target, eval_target = train_test_split(dataset, y, stratify=y,
-                                                                              test_size=test_size, random_state=42)
+                                                                              test_size=test_size, random_state=RANDOM_SEED)
 
     return train_dataset, eval_dataset, train_target, eval_target
 

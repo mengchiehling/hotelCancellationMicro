@@ -11,11 +11,11 @@ bayesianOptimization:
 pbounds:
   reg_alpha: (0.1, 10)
   reg_lambda: (0.1, 10)
-  learning_rate: (0.01, 0.1)
+  learning_rate: (0.01, 0.1)  #(0.01, 0.1)
   min_child_samples: (2, 10)
   num_leaves: (15, 100)
   min_df: (10, 30)
-  k: (5,7) #(80, 512)
+  k: (80,512) #(80, 512)
 
 features_configuration:
   A:
@@ -68,4 +68,4 @@ features_configuration:
 
   M:
     onehot: ['payment_type', 'nationality_code', 'gender', 'source', 'currency_code', 'season', 'platform', 'check_in_month','holiday','weekday', 'type', 'sp_date', 'midd', 'sallery', 'workingday', 'is_rest_day', 'vecation', 'is_event', 's_vecation', 'w_vecation']
-    numerical: ['number_of_allpeople', 'total_stays_night', 'tax_rate', 'service_rate', 'price', 'if_comment',  'lead_time', 'lead_time_range', 'days2vecation', 'vecation_days', 'Precp', 'PrecpHour', 'SunShine', 'Temperature']
+    numerical: ['number_of_allpeople', 'total_stays_night', 'tax_rate', 'service_rate', 'price', 'if_comment',  'lead_time', 'lead_time_range', 'days2vecation', 'vecation_days']

@@ -29,10 +29,11 @@ def optimization_process(fn, pbounds: Dict, algorithm: str, env: str) -> Tuple[D
 
     bayesianOptimization = training_config['bayesianOptimization'][env]
 
+    RANDOM_SEED = 42
     optimizer = BayesianOptimization(
         f=fn,
         pbounds=pbounds,
-        random_state=1)
+        random_state=RANDOM_SEED)
 
     export_form = datetime.now().strftime("%Y%m%d-%H%M")
 
