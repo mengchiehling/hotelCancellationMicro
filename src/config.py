@@ -4,3 +4,4 @@ features_configuration = {"onehot": None,
 class_weight = None
 algorithm = None
 hotel_ids = None
+configuration = None

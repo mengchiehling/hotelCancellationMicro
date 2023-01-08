@@ -71,7 +71,7 @@ def process(X: pd.Series, y: pd.Series, test_size: float, **kwargs):
                         "model__num_leaves": num_leaves,
                         })
 
-    # ToDo replace with time series splitting
+    #ToDo
     y = y.astype(np.int32).values
     X_train, X_val, y_train, y_val = train_test_split(X, y, stratify=y, test_size=test_size, random_state=RANDOM_SEED)
 

@@ -45,11 +45,11 @@ def optimization_process(fn, pbounds: Dict, algorithm: str, env: str) -> Tuple[D
     hotel_ids = config.hotel_ids
 
     if isinstance(hotel_ids, list):
-        logs = f"{optimization_file_dir}/logs_{algorithm}_{hotel_ids[0]}_{export_form}.json"
-        search_pattern = 'logs_' + algorithm + f"_{hotel_ids[0]}"+ "_[\d]{8}-[\d]{4}.json"
+        logs = f"{optimization_file_dir}/logs_{algorithm}_{config.configuration}_{hotel_ids[0]}_{export_form}.json"
+        search_pattern = 'logs_' + algorithm + f"_{config.configuration}" + f"_{hotel_ids[0]}"+ "_[\d]{8}-[\d]{4}.json"
     else:
-        logs = f"{optimization_file_dir}/logs_{algorithm}_unification_{export_form}.json"
-        search_pattern = 'logs_' + algorithm + "_unification_[\d]{8}-[\d]{4}.json"
+        logs = f"{optimization_file_dir}/logs_{algorithm}_{config.configuration}_unification_{export_form}.json"
+        search_pattern = 'logs_' + algorithm + f"_{config.configuration}" + "_unification_[\d]{8}-[\d]{4}.json"
 
 
     res = [f for f in os.listdir(optimization_file_dir) if re.search(search_pattern, f)]

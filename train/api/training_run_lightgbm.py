@@ -15,15 +15,15 @@ from train.common.optimization import optimization_process
 from train.common.model_selection import cross_validation
 from train.common.data_preparation import load_training_data
 from train.logic.training_process_lightgbm import process
-from train.common.evaluation import run_evaluation
+#from train.common.evaluation import run_evaluation
 
 
 def create_dataset(dataset: pd.DataFrame, test_size):
 
-    RANDOM_SEED = 42
+    #RANDOM_SEED = 42
     y = dataset['label']
-    train_dataset, eval_dataset, train_target, eval_target = train_test_split(dataset, y, stratify=y,
-                                                                              test_size=test_size, random_state=RANDOM_SEED)
+    train_dataset, eval_dataset, train_target, eval_target = train_test_split(dataset, y,
+                                                                              test_size=test_size, shuffle=False)
 
     return train_dataset, eval_dataset, train_target, eval_target
 
@@ -43,9 +43,9 @@ def export_final_model(dataset, test_size: float, evaluation:bool=False):
         os.makedirs(dir_)
 
     if evaluation:
-        filename = os.path.join(dir_, f'{filename}_{hotel_id}_evaluation.sav')
+        filename = os.path.join(dir_, f'{filename}_{config.configuration}_{hotel_id}_evaluation.sav')
     else:
-        filename = os.path.join(dir_, f'{filename}_{hotel_id}.sav')
+        filename = os.path.join(dir_, f'{filename}_{config.configuration}_{hotel_id}.sav')
 
     joblib.dump(model, filename)
 
@@ -55,6 +55,7 @@ def set_configuration():
     config.class_weight = args.class_weight
     config.algorithm = 'lightgbm'
     config.hotel_ids = args.hotel_ids
+    config.configuration = args.configuration
 
 
 if __name__ == "__main__":
@@ -100,6 +101,6 @@ if __name__ == "__main__":
 
     model = load_lightgbm_model(hotel_id=hotel_id)
 
-    run_evaluation(model=model, eval_dataset=test_dataset, filename=filename)
+    #run_evaluation(model=model, eval_dataset=test_dataset, filename=filename)
 
 

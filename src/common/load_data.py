@@ -15,9 +15,9 @@ def retrieve_hyperparameter_files(algorithm: str, last: bool=False) -> List:
     dir_ = os.path.join(get_datafetch(), 'optimization')
 
     if isinstance(config.hotel_ids, list):
-        search_pattern = 'logs_' + algorithm + f"_{config.hotel_ids[0]}" + "_[\d]{8}-[\d]{4}.json"
+        search_pattern = 'logs_' + algorithm + f"_{config.configuration}_{config.hotel_ids[0]}" + "_[\d]{8}-[\d]{4}.json"
     else:
-        search_pattern = 'logs_' + algorithm + "_unification_[\d]{8}-[\d]{4}.json"
+        search_pattern = 'logs_' + algorithm + f"_{config.configuration}" + "_unification_[\d]{8}-[\d]{4}.json"
 
     logger.debug(f"retrieve file pattern {search_pattern}")
 

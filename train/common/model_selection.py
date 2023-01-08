@@ -4,7 +4,7 @@ from functools import partial
 
 import pandas as pd
 import numpy as np
-from sklearn.model_selection import StratifiedKFold, train_test_split
+from sklearn.model_selection import StratifiedKFold, train_test_split, TimeSeriesSplit
 from sklearn.metrics import accuracy_score
 
 from src import config
@@ -32,19 +32,43 @@ def cross_validation(data: pd.DataFrame, x_labels: List[str], y_label: str, opti
     X = data
     y = data[y_label]
 
+    date_list = X['check_in'].values.tolist()
+    date_list.sort()
+    date_start = date_list[0]
+    date_end = date_list[-1]
+    idx = pd.date_range(date_start, date_end)
+    idx = [t.strftime("%Y-%m-%d") for t in idx]
+    date_feature = pd.DataFrame(data=np.zeros([len(idx), 1]), index=idx)
+
+
     y_pred = []
     y_true = []
 
     # ToDo: Switch to time series split
-    RANDOM_SEED = 42
-    kfold = StratifiedKFold(n_splits=5, random_state=RANDOM_SEED, shuffle=True)
+    #RANDOM_SEED = 42
 
-    for train_index, test_index in kfold.split(X, y):
+    kfold = TimeSeriesSplit(n_splits=5, test_size=None, max_train_size=None)
 
-        X_train, X_test = X.iloc[train_index], X.iloc[test_index]
+    #kfold = StratifiedKFold(n_splits=5, random_state=RANDOM_SEED, shuffle=True)
+
+    for n_fold, (train_index, test_index) in enumerate(kfold.split(date_feature)):
+
+        train_time = date_feature.iloc[train_index].index
+        test_time = date_feature.iloc[test_index].index
+
+        X_train = X[X['check_in'].isin(train_time)]
+        X_test = X[X['check_in'].isin(test_time)]
 
         y_train = X_train[y_label]
         y_test = X_test[y_label]
+
+        train_time_begin = date_feature.iloc[train_index[0]].name
+        train_time_end = date_feature.iloc[train_index[-1]].name
+
+        test_time_begin = date_feature.iloc[test_index[0]].name
+        test_time_end = date_feature.iloc[test_index[-1]].name
+
+        print(f"fold {n_fold}: training: {train_time_begin} - {train_time_end}, testing: {test_time_begin} - {test_time_end}")
 
         model = process(X_train[x_labels], y_train, test_size=test_size,  **kwargs)
 
