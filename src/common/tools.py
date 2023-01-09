@@ -1,6 +1,10 @@
 import os
 import yaml
 
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+
 from src.api import logger
 from src import config
 from src.io.path_definition import get_file
@@ -60,7 +64,31 @@ def load_optimized_parameters(algorithm: str, last: bool=False):
                     params = data['params']
 
     return params, target
-#
-# if __name__ == "__main__":
-#
-#     load_optimized_parameters(algorithm='unification')
+
+
+def create_fictitous_date(df: pd.DataFrame):
+
+    date_list = df['check_in'].values.tolist()
+    date_list.sort()
+    date_start = date_list[0]
+    date_end = date_list[-1]
+    idx = pd.date_range(date_start, date_end)
+    idx = [t.strftime("%Y-%m-%d") for t in idx]
+    date_feature = pd.DataFrame(data=np.zeros([len(idx), 1]), index=idx)
+
+    return date_feature
+
+
+def timeseries_train_test_split(df, test_size):
+
+    date_feature = create_fictitous_date(df)
+
+    train_time, eval_time = train_test_split(date_feature, test_size=test_size, shuffle=False)
+
+    train_dataset = df[df['check_in'].isin(train_time.index)]
+    eval_dataset = df[df['check_in'].isin(eval_time.index)]
+
+    train_target = train_dataset['label']
+    eval_target = eval_dataset['label']
+
+    return train_dataset, eval_dataset, train_target, eval_target

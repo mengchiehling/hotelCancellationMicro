@@ -8,6 +8,7 @@ from sklearn.model_selection import StratifiedKFold, train_test_split, TimeSerie
 from sklearn.metrics import accuracy_score
 
 from src import config
+from src.common.tools import create_fictitous_date
 
 
 def cross_validation(data: pd.DataFrame, x_labels: List[str], y_label: str, optimization: bool,
@@ -32,13 +33,7 @@ def cross_validation(data: pd.DataFrame, x_labels: List[str], y_label: str, opti
     X = data
     y = data[y_label]
 
-    date_list = X['check_in'].values.tolist()
-    date_list.sort()
-    date_start = date_list[0]
-    date_end = date_list[-1]
-    idx = pd.date_range(date_start, date_end)
-    idx = [t.strftime("%Y-%m-%d") for t in idx]
-    date_feature = pd.DataFrame(data=np.zeros([len(idx), 1]), index=idx)
+    date_feature = create_fictitous_date(X)
 
 
     y_pred = []
@@ -70,9 +65,9 @@ def cross_validation(data: pd.DataFrame, x_labels: List[str], y_label: str, opti
 
         print(f"fold {n_fold}: training: {train_time_begin} - {train_time_end}, testing: {test_time_begin} - {test_time_end}")
 
-        model = process(X_train[x_labels], y_train, test_size=test_size,  **kwargs)
+        model = process(X_train, y_train, test_size=test_size,  **kwargs)
 
-        y_temp = model.predict(X_test[x_labels])
+        y_temp = model.predict(X_test)
 
         y_true.extend(y_test.tolist())
         y_pred.extend(y_temp.tolist())

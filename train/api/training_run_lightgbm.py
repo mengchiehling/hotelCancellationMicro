@@ -4,28 +4,17 @@ import joblib
 from functools import partial
 
 import pandas as pd
-from sklearn.model_selection import train_test_split
 
 from src.api import logger
 from src import config
 from src.io.path_definition import get_datafetch
 from src.io.load_model import load_lightgbm_model
-from src.common.tools import load_x_labels, load_pbounds, load_optimized_parameters
+from src.common.tools import load_x_labels, load_pbounds, load_optimized_parameters, timeseries_train_test_split
 from train.common.optimization import optimization_process
 from train.common.model_selection import cross_validation
 from train.common.data_preparation import load_training_data
 from train.logic.training_process_lightgbm import process
-#from train.common.evaluation import run_evaluation
 
-
-def create_dataset(dataset: pd.DataFrame, test_size):
-
-    #RANDOM_SEED = 42
-    y = dataset['label']
-    train_dataset, eval_dataset, train_target, eval_target = train_test_split(dataset, y,
-                                                                              test_size=test_size, shuffle=False)
-
-    return train_dataset, eval_dataset, train_target, eval_target
 
 
 def export_final_model(dataset, test_size: float, evaluation:bool=False):
@@ -80,7 +69,7 @@ if __name__ == "__main__":
 
     dataset.sort_values(by='check_in', inplace=True)
 
-    train_dataset, test_dataset, train_target, test_target = create_dataset(dataset, test_size=args.test_size)
+    train_dataset, test_dataset, train_target, test_target = timeseries_train_test_split(dataset, test_size=args.test_size)
 
     x_labels = load_x_labels(configuration=args.configuration)
 

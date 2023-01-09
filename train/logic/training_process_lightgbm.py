@@ -11,6 +11,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
 
 from src.config import features_configuration, class_weight
+from src.common.tools import timeseries_train_test_split
 
 
 def build_transformer_pipeline(stats=None) -> Union[ColumnTransformer, Pipeline]:
@@ -71,9 +72,8 @@ def process(X: pd.Series, y: pd.Series, test_size: float, **kwargs):
                         "model__num_leaves": num_leaves,
                         })
 
-    #ToDo
-    y = y.astype(np.int32).values
-    X_train, X_val, y_train, y_val = train_test_split(X, y, stratify=y, test_size=test_size, random_state=RANDOM_SEED)
+
+    X_train, X_val, y_train, y_val = timeseries_train_test_split(df=X, test_size=test_size)
 
     callbacks = [early_stopping(stopping_rounds=100), log_evaluation(period=100)]
 
