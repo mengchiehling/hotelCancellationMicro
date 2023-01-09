@@ -56,7 +56,7 @@ def create_check_in_month(df: pd.DataFrame):
 
 def create_important_sp_date(df: pd.DataFrame):
 
-    df[df['sp_date'].isin(['白色情人節', '西洋情人節', '七夕情人節','父親節','母親節','聖誕節']), "important_sp_date"] = 1
+    df.loc[df['sp_date'].isin(['白色情人節', '西洋情人節', '七夕情人節','父親節','母親節','聖誕節']), "important_sp_date"] = 1
 
     return df
 
