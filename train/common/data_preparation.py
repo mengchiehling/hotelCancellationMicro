@@ -4,7 +4,7 @@ import pandas as pd
 
 from src.api import logger
 from src.common.load_data import load_data
-from src.common.feature_engineering import create_total_stays_night, create_number_of_allpeople, create_nationality_code, create_if_comment, create_check_in_month
+from src.common.feature_engineering import create_total_stays_night, create_number_of_allpeople, create_nationality_code, create_if_comment, create_check_in_month, stays_night_is_national_holiday, create_important_sp_date, stays_night_is_holiday ,stays_night_is_weekday, create_is_weekday
 
 def load_training_data(hotel_ids: Optional[List], remove_business_booking: bool=True) -> Tuple[pd.DataFrame, pd.Series]:
 
@@ -27,6 +27,12 @@ def load_training_data(hotel_ids: Optional[List], remove_business_booking: bool=
     df = create_nationality_code(df=df)
     df = create_if_comment(df=df)
     df = create_check_in_month(df=df)
+    df = stays_night_is_national_holiday(df=df)
+    df = stays_night_is_holiday(df=df)
+    df = create_important_sp_date(df=df)
+    df = create_is_weekday(df=df)
+    df = stays_night_is_weekday(df=df)
+
 
     df['label'] = 0
     df.loc[df['status'] == 'CHECKED_IN', 'label'] = 0
