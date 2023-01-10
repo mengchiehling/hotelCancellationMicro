@@ -51,7 +51,7 @@ def process(X: pd.Series, y: pd.Series, test_size: float, **kwargs):
 
     model =  Pipeline([('feature_extractor', feature_extractor),
                        ('model', LGBMClassifier(boosting_type='gbdt', random_state=RANDOM_SEED, class_weight=class_weight,
-                                                n_estimators=3000, objective='binary', n_jobs=-1))
+                                                n_estimators=3000, objective='binary', n_jobs=1))
                        ])
 
     k = kwargs.get('k', None)

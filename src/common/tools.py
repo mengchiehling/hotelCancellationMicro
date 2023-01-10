@@ -65,7 +65,7 @@ def load_optimized_parameters(algorithm: str, last: bool=False):
 
     return params, target
 
-
+#創建虛構日期
 def create_fictitous_date(df: pd.DataFrame):
 
     date_list = df['check_in'].values.tolist()
@@ -80,14 +80,22 @@ def create_fictitous_date(df: pd.DataFrame):
 
 
 def timeseries_train_test_split(df, test_size):
-
+    '''
+    #切法1
     date_feature = create_fictitous_date(df)
-
     train_time, eval_time = train_test_split(date_feature, test_size=test_size, shuffle=False)
-
     train_dataset = df[df['check_in'].isin(train_time.index)]
     eval_dataset = df[df['check_in'].isin(eval_time.index)]
+    train_target = train_dataset['label']
+    eval_target = eval_dataset['label']
+    '''
 
+    #切法2
+    train_time, test_time = train_test_split(np.unique(df['check_in']), test_size=test_size, shuffle=False)
+    train_date_feature = create_fictitous_date(df[df['check_in'].isin(train_time)])
+    test_date_feature = create_fictitous_date(df[df['check_in'].isin(test_time)])
+    train_dataset = df[df['check_in'].isin(train_date_feature.index)]
+    eval_dataset = df[df['check_in'].isin(test_date_feature.index)]
     train_target = train_dataset['label']
     eval_target = eval_dataset['label']
 

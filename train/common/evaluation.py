@@ -10,9 +10,9 @@ from train.common.timeseries_prediction import timeseries_prediction
 from src.api import logger
 from src.io.path_definition import get_datafetch
 from train.common.data_preparation import load_training_data
-from train.api.training_run_lightgbm import create_dataset
+#from train.api.training_run_lightgbm import create_dataset
 from src.io.load_model import load_lightgbm_model
-
+from src.common.tools import timeseries_train_test_split
 
 def run_mape_evaluation(df: pd.DataFrame, pic_name):
 
@@ -100,7 +100,7 @@ if __name__ == "__main__":
 
     dataset, _ = load_training_data(hotel_ids=args.hotel_ids, remove_business_booking=True)
 
-    train_dataset, test_dataset, train_target, test_target = create_dataset(dataset, test_size=args.test_size)
+    train_dataset, test_dataset, train_target, test_target =  timeseries_train_test_split (dataset, test_size=args.test_size)
 
     #x_labels = load_x_labels(configuration=args.configuration)
 

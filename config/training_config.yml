@@ -69,3 +69,7 @@ features_configuration:
   M:
     onehot: ['payment_type', 'nationality_code', 'gender', 'source', 'currency_code', 'season', 'platform', 'check_in_month','holiday','weekday', 'type', 'sp_date', 'midd', 'sallery', 'workingday', 'is_rest_day', 'vecation', 'is_event', 's_vecation', 'w_vecation']
     numerical: ['number_of_allpeople', 'total_stays_night', 'tax_rate', 'service_rate', 'price', 'if_comment',  'lead_time', 'lead_time_range', 'days2vecation', 'vecation_days']
+
+  A1:
+    onehot: [ 'payment_type', 'nationality_code', 'gender', 'source', 'currency_code' ]
+    numerical: [ 'number_of_allpeople', 'total_stays_night', 'tax_rate', 'service_rate', 'price' ]
