@@ -78,6 +78,8 @@ if __name__ == "__main__":
 
     dataset, _ = load_training_data(hotel_ids=args.hotel_ids, remove_business_booking=True)
 
+    dataset.sort_values(by='check_in', inplace=True)
+
     train_dataset, test_dataset, train_target, test_target = create_dataset(dataset, test_size=args.test_size)
 
     x_labels = load_x_labels(configuration=args.configuration)
