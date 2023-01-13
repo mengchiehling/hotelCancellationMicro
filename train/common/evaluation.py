@@ -1,18 +1,34 @@
 import os
 import argparse
+import joblib
 from src import config
+from typing import Optional
+
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from sklearn.metrics import accuracy_score, f1_score, recall_score, precision_score, confusion_matrix, \
     mean_absolute_percentage_error, roc_auc_score, roc_curve
+
 from train.common.timeseries_prediction import timeseries_prediction
 from src.api import logger
 from src.io.path_definition import get_datafetch
 from train.common.data_preparation import load_training_data
 #from train.api.training_run_lightgbm import create_dataset
-from src.io.load_model import load_lightgbm_model
+# from src.io.load_model import load_lightgbm_model
 from src.common.tools import timeseries_train_test_split
+
+
+def load_lightgbm_model(hotel_id: Optional[int]):
+
+    dir_ = os.path.join(get_datafetch(), 'model')
+    if hotel_id is not None:
+        model = joblib.load(os.path.join(dir_, f'micro_{config.configuration}_{hotel_id}_evaluation.sav'))
+    else:
+        model = joblib.load(os.path.join(dir_, f'micro_{config.configuration}_unification_evaluation.sav'))
+
+    return model
+
 
 def run_mape_evaluation(df: pd.DataFrame, pic_name):
 
@@ -100,7 +116,7 @@ if __name__ == "__main__":
 
     dataset, _ = load_training_data(hotel_ids=args.hotel_ids, remove_business_booking=True)
 
-    train_dataset, test_dataset, train_target, test_target =  timeseries_train_test_split (dataset, test_size=args.test_size)
+    train_dataset, test_dataset, train_target, test_target =  timeseries_train_test_split(dataset, test_size=args.test_size)
 
     #x_labels = load_x_labels(configuration=args.configuration)
 

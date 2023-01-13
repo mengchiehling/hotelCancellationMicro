@@ -4,7 +4,7 @@ from functools import partial
 
 import pandas as pd
 import numpy as np
-from sklearn.model_selection import StratifiedKFold, train_test_split, TimeSeriesSplit
+from sklearn.model_selection import StratifiedKFold, train_test_split, TimeSeriesSplit, GroupKFold
 from sklearn.metrics import accuracy_score
 
 from src import config
@@ -33,37 +33,43 @@ def cross_validation(data: pd.DataFrame, x_labels: List[str], y_label: str, opti
     X = data
     y = data[y_label]
 
-    date_feature = create_fictitous_date(X)
+    # date = create_fictitous_date(X)
 
 
     y_pred = []
     y_true = []
 
     # ToDo: Switch to time series split
-    #RANDOM_SEED = 42
+    RANDOM_SEED = 42
 
-    kfold = TimeSeriesSplit(n_splits=5, test_size=None, max_train_size=None)
+    # kfold = TimeSeriesSplit(n_splits=5, test_size=None, max_train_size=None)
 
-    #kfold = StratifiedKFold(n_splits=5, random_state=RANDOM_SEED, shuffle=True)
+    # kfold = StratifiedKFold(n_splits=5, random_state=RANDOM_SEED, shuffle=True)
 
-    for n_fold, (train_index, test_index) in enumerate(kfold.split(date_feature)):
+    kfold = GroupKFold(n_splits=5)
+    groups = X['check_in']
 
-        train_time = date_feature.iloc[train_index].index
-        test_time = date_feature.iloc[test_index].index
+    for n_fold, (train_index, test_index) in enumerate(kfold.split(X, groups=groups)):
 
-        X_train = X[X['check_in'].isin(train_time)]
-        X_test = X[X['check_in'].isin(test_time)]
+        # train_time = date.iloc[train_index].index
+        # test_time = date.iloc[test_index].index
+        #
+        # X_train = X[X['check_in'].isin(train_time)]
+        # X_test = X[X['check_in'].isin(test_time)]
+
+        X_train = X.iloc[train_index]
+        X_test = X.iloc[test_index]
 
         y_train = X_train[y_label]
         y_test = X_test[y_label]
 
-        train_time_begin = date_feature.iloc[train_index[0]].name
-        train_time_end = date_feature.iloc[train_index[-1]].name
-
-        test_time_begin = date_feature.iloc[test_index[0]].name
-        test_time_end = date_feature.iloc[test_index[-1]].name
-
-        print(f"fold {n_fold}: training: {train_time_begin} - {train_time_end}, testing: {test_time_begin} - {test_time_end}")
+        # train_time_begin = date.iloc[train_index[0]].name
+        # train_time_end = date.iloc[train_index[-1]].name
+        #
+        # test_time_begin = date.iloc[test_index[0]].name
+        # test_time_end = date.iloc[test_index[-1]].name
+        #
+        # print(f"fold {n_fold}: training: {train_time_begin} - {train_time_end}, testing: {test_time_begin} - {test_time_end}")
 
         model = process(X_train, y_train, test_size=test_size,  **kwargs)
 
