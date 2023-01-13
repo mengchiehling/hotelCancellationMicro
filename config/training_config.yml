@@ -9,11 +9,18 @@ bayesianOptimization:
     acq: 'ucb'
 
 pbounds:
-  reg_alpha: (0.1, 10)
-  reg_lambda: (0.1, 10)
+  bagging_fraction: (0.8, 1)
+  feature_fraction: (0.6, 1)
+  min_child_weight: (0, 22)
+  max_depth: (4, 10)
+  max_bin: (64, 512)
+  bagging_freq: (2, 4)
+  min_split_gain: (0,1)
+  reg_alpha: (1e-5, 1)
+  reg_lambda: (1e-5, 1)
   learning_rate: (0.001, 0.1)  #(0.01, 0.1)
   min_child_samples: (2, 10)
-  num_leaves: (15, 100)
+  num_leaves: (15, 108)
   k: (80,512) #(80, 512)
 
 features_configuration:

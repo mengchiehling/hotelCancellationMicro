@@ -51,7 +51,7 @@ def process(X: pd.Series, y: pd.Series, test_size: float, **kwargs):
 
     model =  Pipeline([('feature_extractor', feature_extractor),
                        ('model', LGBMClassifier(boosting_type='gbdt', random_state=RANDOM_SEED, class_weight=class_weight,
-                                                n_estimators=3000, objective='binary', n_jobs=1))
+                                                n_estimators=3000, objective='binary', n_jobs=-1))
                        ])
 
     k = kwargs.get('k', None)
@@ -64,12 +64,26 @@ def process(X: pd.Series, y: pd.Series, test_size: float, **kwargs):
     learning_rate = kwargs['learning_rate']
     min_child_samples = int(kwargs['min_child_samples'])
     num_leaves = int(kwargs['num_leaves'])
+    bagging_fraction = kwargs['bagging_fraction']
+    feature_fraction = kwargs['feature_fraction']
+    min_child_weight = kwargs['min_child_weight']
+    max_depth = int(kwargs['max_depth'])
+    max_bin = int(kwargs['max_bin'])
+    bagging_freq = int(kwargs['bagging_freq'])
+    min_split_gain = kwargs['min_split_gain']
 
     model.set_params(**{"model__reg_alpha": reg_alpha,
                         "model__reg_lambda": reg_lambda,
                         "model__learning_rate": learning_rate,
                         "model__min_child_samples": min_child_samples,
                         "model__num_leaves": num_leaves,
+                        "model__bagging_fraction": bagging_fraction,
+                        "model__feature_fraction": feature_fraction,
+                        "model__min_child_weight": min_child_weight,
+                        "model__max_depth": max_depth,
+                        "model__max_bin": max_bin,
+                        "model__bagging_freq": bagging_freq,
+                        "model__min_split_gain": min_split_gain
                         })
 
 
