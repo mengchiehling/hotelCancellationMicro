@@ -2,6 +2,8 @@ import os
 import argparse
 from src import config
 import matplotlib.pyplot as plt
+from typing import Optional
+import joblib
 import numpy as np
 import pandas as pd
 from sklearn.metrics import accuracy_score, f1_score, recall_score, precision_score, confusion_matrix, \
@@ -11,8 +13,18 @@ from src.api import logger
 from src.io.path_definition import get_datafetch
 from train.common.data_preparation import load_training_data
 from train.api.training_run_lightgbm import create_dataset
-from src.io.load_model import load_lightgbm_model
+#from src.io.load_model import load_lightgbm_model
 
+
+def load_lightgbm_model(hotel_id: Optional[int]):
+
+    dir_ = os.path.join(get_datafetch(), 'model')
+    if hotel_id is not None:
+        model = joblib.load(os.path.join(dir_, f'micro_{config.configuration}_{hotel_id}_evaluation.sav'))
+    else:
+        model = joblib.load(os.path.join(dir_, f'micro_{config.configuration}_unification_evaluation.sav'))
+
+    return model
 
 def run_mape_evaluation(df: pd.DataFrame, pic_name):
 

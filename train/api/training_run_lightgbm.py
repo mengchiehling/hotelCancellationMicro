@@ -17,13 +17,13 @@ from train.common.data_preparation import load_training_data
 from train.logic.training_process_lightgbm import process
 #from train.common.evaluation import run_evaluation
 
-
+#等同於網路上的train_test_split
 def create_dataset(dataset: pd.DataFrame, test_size):
 
-    #RANDOM_SEED = 42
+    RANDOM_SEED = 42
     y = dataset['label']
     train_dataset, eval_dataset, train_target, eval_target = train_test_split(dataset, y,
-                                                                              test_size=test_size, shuffle=False)
+                                                                              test_size=test_size, shuffle=True,random_state=RANDOM_SEED)
 
     return train_dataset, eval_dataset, train_target, eval_target
 
