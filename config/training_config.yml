@@ -77,3 +77,7 @@ features_configuration:
   O:
     onehot: ['nationality_code', 'gender', 'source', 'season', 'platform', 'check_in_month','holiday','weekday']
     numerical: ['number_of_allpeople', 'total_stays_night', 'price', 'lead_time']
+
+  P:
+    onehot: [ 'nationality_code', 'gender', 'source', 'season', 'platform', 'check_in_month','holiday','weekday','midd', 'sallery', 'workingday', 'is_rest_day', 'vecation', 'is_event', 's_vecation', 'w_vecation' ]
+    numerical: [ 'number_of_allpeople', 'total_stays_night', 'price', 'lead_time', 'days2vecation', 'vecation_days' ]

@@ -17,7 +17,7 @@ from train.common.data_preparation import load_training_data
 from train.logic.training_process_lightgbm import process
 #from train.common.evaluation import run_evaluation
 
-#等同於網路上的train_test_split
+#等同於網路上的train_test_split步驟
 def create_dataset(dataset: pd.DataFrame, test_size):
 
     RANDOM_SEED = 42
