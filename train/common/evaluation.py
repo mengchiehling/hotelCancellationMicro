@@ -12,19 +12,11 @@ from train.common.timeseries_prediction import timeseries_prediction
 from src.api import logger
 from src.io.path_definition import get_datafetch
 from train.common.data_preparation import load_training_data
-from train.api.training_run_lightgbm import create_dataset
-#from src.io.load_model import load_lightgbm_model
+from train.api.training_run import create_dataset
+from src.io.load_model import load_model
 
 
-def load_lightgbm_model(hotel_id: Optional[int]):
 
-    dir_ = os.path.join(get_datafetch(), 'model')
-    if hotel_id is not None:
-        model = joblib.load(os.path.join(dir_, f'micro_{config.configuration}_{hotel_id}_evaluation.sav'))
-    else:
-        model = joblib.load(os.path.join(dir_, f'micro_{config.configuration}_unification_evaluation.sav'))
-
-    return model
 
 def run_mape_evaluation(df: pd.DataFrame, pic_name):
 
@@ -77,13 +69,13 @@ def run_evaluation(model, eval_dataset: pd.DataFrame, filename: str):
 
     eval_dataset['pred'] = y_pred
     df_grouped = eval_dataset.groupby(by="check_in")[["pred", 'label']].sum()
-
-    df_grouped.to_csv(os.path.join(get_datafetch(), f'predictResult(no fill zero)_{filename}.csv'))
+    algorithm = args.algorithm
+    df_grouped.to_csv(os.path.join(get_datafetch(), f'predictResult(no fill zero)_{algorithm}_{filename}.csv'))
 
     run_mape_evaluation(df_grouped,"no_fill_zero")
     df_grouped = timeseries_prediction(df_grouped)
     run_mape_evaluation(df_grouped,"fill_zero")
-    df_grouped.to_csv(os.path.join(get_datafetch(), f'predictResult(fill zero)_{filename}.csv'))
+    df_grouped.to_csv(os.path.join(get_datafetch(), f'predictResult(fill zero)_{algorithm}_{filename}.csv'))
 
     eval_dataset['mismatch'] = (eval_dataset['pred'] != eval_dataset['label']).astype(int)
     eval_dataset = eval_dataset[eval_dataset['mismatch'] == 1]
@@ -92,7 +84,7 @@ def run_evaluation(model, eval_dataset: pd.DataFrame, filename: str):
 
 def set_configuration():
 
-    config.algorithm = 'lightgbm'
+    config.algorithm = args.algorithm #'lightgbm'
     config.hotel_ids = args.hotel_ids
     config.configuration = args.configuration
 
@@ -105,7 +97,7 @@ if __name__ == "__main__":
     parser.add_argument('--test_size', type=float, help='Fraction of data for model testing')
     parser.add_argument('--configuration', type=str, help='"A", please check config/training_config.yml')
     parser.add_argument('--hotel_ids', nargs='+', type=int, help='hotel ids')
-
+    parser.add_argument('--algorithm', type=str)
     args = parser.parse_args()
 
     set_configuration()
@@ -116,7 +108,7 @@ if __name__ == "__main__":
 
     #x_labels = load_x_labels(configuration=args.configuration)
 
-    filename = f'{model_name}'
+    #filename = f'{model_name}'
 
     if isinstance(args.hotel_ids, list):
         hotel_id = args.hotel_ids[0]
@@ -129,6 +121,6 @@ if __name__ == "__main__":
 
     #export_final_model(dataset=train_dataset, test_size=args.test_size, evaluation=True)
 
-    model = load_lightgbm_model(hotel_id=hotel_id)
+    model = load_model(hotel_id=hotel_id)
 
     run_evaluation(model=model, eval_dataset=test_dataset, filename=filename)

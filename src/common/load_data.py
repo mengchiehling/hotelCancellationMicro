@@ -2,8 +2,10 @@ import os
 import re
 from datetime import datetime
 from typing import List
+from src.io.path_definition import get_file
 
 import pandas as pd
+#from sklearn.impute import SimpleImputer
 
 from src.api import logger
 from src import config
@@ -36,6 +38,9 @@ def retrieve_hyperparameter_files(algorithm: str, last: bool=False) -> List:
     return files
 
 
+
+
+
 def load_data() -> pd.DataFrame:
 
     filename = os.path.join(get_datafetch(), '訂單資料_20221229.csv')
@@ -58,7 +63,8 @@ def load_data() -> pd.DataFrame:
     room_type_data = pd.read_csv(filename, index_col=0)
     room_type_data1 = room_type_data.set_index(["room_type_id"])['type'].to_dict()
     booking_data['type'] = booking_data['pms_room_type_id'].map(room_type_data1)
-    booking_data.fillna(0, inplace=True)
+
+    #booking_data.fillna(0, inplace=True)
 
     return booking_data
 

@@ -7,9 +7,10 @@ from src.io.path_definition import get_file
 from src.common.load_data import retrieve_hyperparameter_files
 
 
-def load_pbounds():
+def load_pbounds(algorithm: str):
 
-    pbounds = load_yaml_file(get_file(os.path.join('config', 'training_config.yml')))['pbounds']
+    training_config = load_yaml_file(get_file(os.path.join('config', 'training_config.yml')))
+    pbounds = training_config[f'pbounds'][algorithm]
     for key, value in pbounds.items():
         pbounds[key] = eval(value)
 
