@@ -14,7 +14,7 @@ from src.io.path_definition import get_datafetch, get_file
 from src.common.tools import load_yaml_file
 
 
-def optimization_process(fn, pbounds: Dict, algorithm: str, env: str) -> Tuple[Dict, np.ndarray]:
+def optimization_process(fn, pbounds: Dict, env: str) -> Tuple[Dict, np.ndarray]:
     """
     Bayesian optimization process interface. Returns hyperparameters of machine learning algorithms and the
     corresponding out-of-fold (oof) predictions. The progress will be saved into a json file.
@@ -43,6 +43,7 @@ def optimization_process(fn, pbounds: Dict, algorithm: str, env: str) -> Tuple[D
         os.makedirs(optimization_file_dir)
 
     hotel_ids = config.hotel_ids
+    algorithm = config.algorithm
 
     if isinstance(hotel_ids, list):
         logs = f"{optimization_file_dir}/logs_{algorithm}_{config.configuration}_{hotel_ids[0]}_{export_form}.json"
