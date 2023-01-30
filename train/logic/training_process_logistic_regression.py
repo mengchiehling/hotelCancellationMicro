@@ -51,8 +51,8 @@ def process(X: pd.Series, y: pd.Series, test_size: float, **kwargs):
     feature_extractor = build_transformer_pipeline(stats=chi2)
 
     model =  Pipeline([('feature_extractor', feature_extractor),
-                       ('model', LogisticRegression(penalty='l2', random_state=RANDOM_SEED, class_weight=config.class_weight,
-                                                      n_jobs=-1))
+                       ('model', LogisticRegression(penalty='elasticnet', random_state=RANDOM_SEED, class_weight=config.class_weight,
+                                                      n_jobs=1, solver='saga'))
                        ])
 
     k = kwargs.get('k', None)
@@ -70,19 +70,20 @@ def process(X: pd.Series, y: pd.Series, test_size: float, **kwargs):
 
     #ToDo
     y = y.astype(np.int32).values
-    X_train, X_val, y_train, y_val = train_test_split(X, y, stratify=y, test_size=test_size, random_state=RANDOM_SEED)
+    X_train = X.copy()
+    y_train = y.copy()
 
     #callbacks = [early_stopping(stopping_rounds=100), log_evaluation(period=100)]
 
     try:
         model_temp = Pipeline(model.steps[:-1])
         model_temp.fit_transform(X_train, y_train)
-        eval_set = [(model_temp.transform(X_val), y_val)]
+        eval_set = [(model_temp.transform(X_train), y_train)]
     except ValueError:
         model.set_params(**{f"feature_extractor__feature_selector__k": 'all'})
         model_temp = Pipeline(model.steps[:-1])
         model_temp.fit_transform(X_train, y_train)
-        eval_set = [(model_temp.transform(X_val), y_val)]
+        eval_set = [(model_temp.transform(X_train), y_train)]
 
     # For example, setting it to 100 means we stop the training if the predictions have not improved for
     # the last 100 rounds.

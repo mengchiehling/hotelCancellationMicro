@@ -9,7 +9,7 @@ from sklearn.model_selection import train_test_split
 from src.api import logger
 from src import config
 from src.io.path_definition import get_datafetch
-from src.io.load_model import load_lightgbm_model
+from src.io.load_model import load_model
 from src.common.tools import load_x_labels, load_pbounds, load_optimized_parameters
 from train.common.optimization import optimization_process
 from train.common.model_selection import cross_validation
@@ -101,9 +101,5 @@ if __name__ == "__main__":
     export_final_model(dataset=dataset, test_size=args.test_size)
 
     export_final_model(dataset=train_dataset, test_size=args.test_size, evaluation=True)
-
-    model = load_lightgbm_model(hotel_id=hotel_id)
-
-    #run_evaluation(model=model, eval_dataset=test_dataset, filename=filename)
 
 

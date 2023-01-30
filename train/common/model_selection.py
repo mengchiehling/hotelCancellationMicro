@@ -59,6 +59,31 @@ def cross_validation(data: pd.DataFrame, x_labels: List[str], y_label: str, opti
         X_train = X[X['check_in'].isin(train_time)]
         X_test = X[X['check_in'].isin(test_time)]
 
+        '''
+        Problem:
+        X_train.groupby('status')['status'].count()
+        X_test.groupby('status')['status'].count()
+        
+        # 訓練 - 驗證 統計分布不均衡
+        hotel_id 294
+        
+        n_fold = 4
+        X_test:
+        CANCELED       233
+        CHECKED_OUT     53
+        NO_SHOW         15
+        UPCOMING        81
+        
+        X_train:
+        CANCELED       2546
+        CHECKED_IN       12
+        CHECKED_OUT    5363
+        NO_SHOW         117
+        UPCOMING          7
+        '''
+
+
+
         y_train = X_train[y_label]
         y_test = X_test[y_label]
 
@@ -76,6 +101,8 @@ def cross_validation(data: pd.DataFrame, x_labels: List[str], y_label: str, opti
 
         y_true.extend(y_test.tolist())
         y_pred.extend(y_temp.tolist())
+
+        print(accuracy_score(y_test, y_temp))
 
     acc = accuracy_score(np.array(y_true), np.array(y_pred))
 
