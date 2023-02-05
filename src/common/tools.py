@@ -34,7 +34,7 @@ def load_x_labels(configuration: str):
 
 def load_yaml_file(filepath: str):
 
-    with open(filepath, 'r') as stream:
+    with open(filepath, 'r', encoding="utf-8") as stream:
         map_ = yaml.safe_load(stream)
 
     return map_

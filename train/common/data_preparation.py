@@ -32,10 +32,11 @@ def load_training_data(hotel_ids: Optional[List], remove_business_booking: bool=
     df = create_if_comment(df=df)
     df = create_check_in_month(df=df)
     df = stays_night_is_national_holiday(df=df)
+    df = create_is_weekday(df=df)
+    # 以下兩個因為是互補性質，所以選一個就好
+    df = stays_night_is_weekday(df=df)
     df = stays_night_is_holiday(df=df)
     df = create_important_sp_date(df=df)
-    df = create_is_weekday(df=df)
-    df = stays_night_is_weekday(df=df)
 
 
     features_configuration = \
@@ -47,7 +48,6 @@ def load_training_data(hotel_ids: Optional[List], remove_business_booking: bool=
 
     simpleimputer = SimpleImputer(strategy='most_frequent')
     df.loc[:, onehot] = simpleimputer.fit_transform(df[onehot])
-
 
     df['label'] = 0
     df.loc[df['status'] == 'CHECKED_IN', 'label'] = 0
