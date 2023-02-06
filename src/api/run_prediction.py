@@ -12,7 +12,7 @@ from src.io.path_definition import get_datafetch
 
 
 
-def load_lightgbm_model(hotel_id: Optional[int]):
+def load_model(hotel_id: Optional[int]):
 
     dir_ = os.path.join(get_datafetch(), 'model')
     if hotel_id is not None:
@@ -59,7 +59,7 @@ if __name__ == "__main__":
 
     set_configuration()
 
-    model = load_lightgbm_model(hotel_id=args.hotel_id)
+    model = load_model(hotel_id=args.hotel_id)
 
     time_start = datetime.strptime(args.time_start, "%Y-%m-%d")
     time_end = (time_start + timedelta(days=args.timespan)).strftime("%Y-%m-%d")

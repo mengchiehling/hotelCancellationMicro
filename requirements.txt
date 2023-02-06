@@ -13,3 +13,4 @@ bayesian-optimization
 lightgbm
 psycopg2
 spacy
+xgboost

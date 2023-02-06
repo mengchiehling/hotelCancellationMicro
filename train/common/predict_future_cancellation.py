@@ -1,13 +1,13 @@
-from src.io.load_model import load_lightgbm_model
+from src.io.load_model import load_model
 import argparse, config
 import pandas as pd
 from datetime import datetime, timedelta
 
-
+# 這個應該就不用了
 
 def predict_future_cancellation(start_time,duration,df):
 
-    model = load_lightgbm_model(hotel_id=args.hotel_id)
+    model = load_model(hotel_id=args.hotel_id)
     y_pred_proba = model.predict_proba(df)
     y_pred = (y_pred_proba[:, 1] > 0.5) * 1
     df['y_pred'] = y_pred

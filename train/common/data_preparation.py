@@ -24,6 +24,7 @@ def load_training_data(hotel_ids: Optional[List], remove_business_booking: bool=
     if remove_business_booking:
         df = df[df["source"] != "BUSINESS_BOOKING"]
 
+    df = df[~(df['status'] == 'UPCOMING')]
 
     # feature engineering:
     df = create_total_stays_night(df=df)
