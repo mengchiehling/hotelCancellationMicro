@@ -21,6 +21,15 @@ pbounds:
     C: (0.0001, 10)
     k: (15,100)
     l1_ratio: (0, 1)
+  xgboost:
+    reg_alpha: (0.1, 10)
+    reg_lambda: (0.1, 10)
+    learning_rate: (0.01, 0.1)  #(0.01, 0.1)
+    min_child_weight: (0, 5)
+    max_leaves: (15, 100)
+    k: (80,512)
+
+
 
 features_configuration:
   A:
