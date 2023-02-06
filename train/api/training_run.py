@@ -3,6 +3,8 @@ import os
 import joblib
 from functools import partial
 import importlib
+
+import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
@@ -21,9 +23,29 @@ from train.common.data_preparation import load_training_data
 def create_dataset(dataset: pd.DataFrame, test_size):
 
     RANDOM_SEED = 42
-    y = dataset['label']
-    train_dataset, eval_dataset, train_target, eval_target = train_test_split(dataset, y,
-                                                                              test_size=test_size, shuffle=True,random_state=RANDOM_SEED)
+
+    unique_hotel_ids = np.unique(dataset['hotel_id'].values)
+
+    train_dataset_list = []
+    eval_dataset_list = []
+    train_target_list = []
+    eval_target_list = []
+
+    for hotel_id in unique_hotel_ids:
+        df_hotel = dataset[dataset['hotel_id']==hotel_id]
+        y = df_hotel['label']
+        train_dataset, eval_dataset, train_target, eval_target = train_test_split(df_hotel, y,
+                                                                                  test_size=test_size, shuffle=True,
+                                                                                  random_state=RANDOM_SEED)
+        train_dataset_list.append(train_dataset)
+        eval_dataset_list.append(eval_dataset)
+        train_target_list.append(train_target)
+        eval_target_list.append(eval_target)
+
+    train_dataset = pd.concat(train_dataset_list)
+    eval_dataset = pd.concat(eval_dataset_list)
+    train_target = pd.concat(train_target_list)
+    eval_target = pd.concat(eval_target_list)
 
     return train_dataset, eval_dataset, train_target, eval_target
 
