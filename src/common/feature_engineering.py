@@ -72,22 +72,24 @@ def stays_night_is_national_holiday(df: pd.DataFrame):
     all_holidays = create_national_holiday_name['date'].values.tolist()
     all_holidays = [datetime.strptime(c, "%Y-%m-%d") for c in all_holidays]
     #all_holidays = create_vecation_name['date'].values
-    f = partial(create_is_holiday, all_holidays=all_holidays)
+    f = partial(create_is_national_holiday, all_holidays=all_holidays)
     df['stay_night_is_national_holiday'] = df.apply(lambda x: f(x), axis=1)
 
     return df
 
 
-def create_is_holiday(x, all_holidays):
+def create_is_national_holiday(x, all_holidays):
 
     check_in = x['check_in']
     check_out = x['check_out']
     check_in = datetime.strptime(check_in, "%Y-%m-%d")
     check_out = datetime.strptime(check_out, "%Y-%m-%d")
 
+    acc_range = pd.date_range(check_in, check_out)
+
     n = 0
-    for holiday in all_holidays:
-        if (holiday <= check_out) and (holiday >= check_in):
+    for d in acc_range:
+        if d in all_holidays:
          n += 1
 
     return n
@@ -96,14 +98,31 @@ def create_is_holiday(x, all_holidays):
 #入住日當中是否有遇到五六也就是假日 (遇到幾次)
 def stays_night_is_holiday(df: pd.DataFrame):
 
-    all_holidays = df['date'].values.tolist()
-    all_holidays = [datetime.strptime(c, "%Y-%m-%d") for c in all_holidays]
+    #all_holidays = df['date'].values.tolist()
+    #all_holidays = [datetime.strptime(c, "%Y-%m-%d") for c in all_holidays]
     #all_holidays = create_vecation_name['date'].values
-    f = partial(create_is_holiday, all_holidays=all_holidays)
-    df['stay_night_is_holiday'] = df.apply(lambda x: f(x), axis=1)
+    #f = partial(create_is_holiday, all_holidays=all_holidays)
+    df['stay_night_is_holiday'] = df.apply(lambda x: _stay_night_is_holiday_fn(x), axis=1)
 
     return df
 
+
+def _stay_night_is_holiday_fn(x):
+
+    check_in = x['check_in']
+    check_out = x['check_out']
+    check_in = datetime.strptime(check_in, "%Y-%m-%d")
+    check_out = datetime.strptime(check_out, "%Y-%m-%d")
+
+    acc_range = pd.date_range(check_in, check_out)
+
+    n = 0
+
+    for d in acc_range:
+        if d.weekday() in [4, 5]:
+            n += 1
+
+    return n
 
 
 #與working day不太一樣，working day是指六日為非工作日，一到五為需要工作日。而create is weekday是對應holiday，指一二三四日為weekday，五六為holiday
@@ -119,12 +138,29 @@ def create_is_weekday(df: pd.DataFrame):
 #入住日當中是否有遇到一二三四日也就是平日 (遇到幾次)
 def stays_night_is_weekday(df: pd.DataFrame):
 
-    all_holidays = create_is_weekday
-    all_holidays = df['date'].values.tolist()
-    all_holidays = [datetime.strptime(c, "%Y-%m-%d") for c in all_holidays]
+    #all_holidays = create_is_weekday
+    #all_holidays = df['date'].values.tolist()
+    #all_holidays = [datetime.strptime(c, "%Y-%m-%d") for c in all_holidays]
     #all_holidays = create_vecation_name['date'].values
-    f = partial(create_is_holiday, all_holidays=all_holidays)
-    df['stay_night_is_weekday'] = df.apply(lambda x: f(x), axis=1)
+    #f = partial(create_is_holiday, all_holidays=all_holidays)
+    df['stay_night_is_weekday'] = df.apply(lambda x: _stay_night_is_weekday_fn(x), axis=1)
 
     return df
 
+
+def _stay_night_is_weekday_fn(x):
+
+    check_in = x['check_in']
+    check_out = x['check_out']
+    check_in = datetime.strptime(check_in, "%Y-%m-%d")
+    check_out = datetime.strptime(check_out, "%Y-%m-%d")
+
+    acc_range = pd.date_range(check_in, check_out)
+
+    n = 0
+
+    for d in acc_range:
+        if d.weekday() in [0, 1, 2, 3, 6]:
+            n += 1
+
+    return n
