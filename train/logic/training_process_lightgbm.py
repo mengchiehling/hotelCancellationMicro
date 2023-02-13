@@ -11,7 +11,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
 from src import config
 
-from src.config import features_configuration
+from src import config
 
 
 def build_transformer_pipeline(stats=None) -> Union[ColumnTransformer, Pipeline]:
@@ -23,11 +23,11 @@ def build_transformer_pipeline(stats=None) -> Union[ColumnTransformer, Pipeline]
     """
 
     transformers = []
-    for key, value in features_configuration.items():
+    for key, value in config.features_configuration.items():
         if key == 'numerical':
-            transformers.append((key, 'passthrough', features_configuration[key]))
+            transformers.append((key, 'passthrough', config.features_configuration[key]))
         elif key == 'onehot':
-            transformers.append((key, OneHotEncoder(handle_unknown="ignore"), features_configuration[key]))
+            transformers.append((key, OneHotEncoder(handle_unknown="ignore"), config.features_configuration[key]))
 
     column_transformer = ColumnTransformer(transformers=transformers, remainder="drop")
 
