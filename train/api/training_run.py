@@ -8,9 +8,9 @@ from sklearn.model_selection import train_test_split
 
 from src.api import logger
 from src import config
-from src.io.path_definition import get_datafetch
+from src.io.path_definition import get_datafetch, get_file
 from src.io.load_model import load_model
-from src.common.tools import load_x_labels, load_pbounds, load_optimized_parameters
+from src.common.tools import load_x_labels, load_pbounds, load_optimized_parameters, load_yaml_file
 from train.common.optimization import optimization_process
 from train.common.model_selection import cross_validation
 from train.common.data_preparation import load_training_data
@@ -56,6 +56,12 @@ def set_configuration():
     config.algorithm =  args.algorithm  #'lightgbm'
     config.hotel_ids = args.hotel_ids
     config.configuration = args.configuration
+
+    features_configuration = \
+        load_yaml_file(get_file(os.path.join('config', 'training_config.yml')))['features_configuration'][
+            args.configuration]
+    for key, values in features_configuration.items():
+        config.features_configuration[key] = values
 
 
 if __name__ == "__main__":
