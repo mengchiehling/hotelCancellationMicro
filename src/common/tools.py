@@ -16,7 +16,7 @@ def load_pbounds(algorithm: str):
 
     return pbounds
 
-
+#限制哪些feature可以放到模型內
 def load_x_labels(configuration: str):
 
     features_configuration = \
@@ -60,7 +60,7 @@ def load_optimized_parameters(algorithm: str, last: bool=False):
                     target_max = target
                     params = data['params']
 
-    return params, target
+    return params, target_max
 #
 # if __name__ == "__main__":
 #

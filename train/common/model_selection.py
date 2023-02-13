@@ -9,8 +9,8 @@ from sklearn.metrics import accuracy_score
 
 from src import config
 
-
-def cross_validation(data: pd.DataFrame, x_labels: List[str], y_label: str, optimization: bool,
+# x_labels: List[str]拿掉
+def cross_validation(data: pd.DataFrame,  y_label: str, optimization: bool,
                      test_size: float, **kwargs) -> Union[float, np.ndarray]:
 
     """
@@ -71,9 +71,12 @@ def cross_validation(data: pd.DataFrame, x_labels: List[str], y_label: str, opti
 
         print(f"fold {n_fold}: training: {train_time_begin} - {train_time_end}, testing: {test_time_begin} - {test_time_end}")
 
-        model = process(X_train[x_labels], y_train, test_size=test_size,  **kwargs)
+        #model = process(X_train[x_labels], y_train, test_size=test_size,  **kwargs)
 
-        y_temp = model.predict(X_test[x_labels])
+        #y_temp = model.predict(X_test[x_labels])
+
+        model = process(X_train, y_train, test_size=test_size,  **kwargs)
+        y_temp = model.predict(X_test)
 
         y_true.extend(y_test.tolist())
         y_pred.extend(y_temp.tolist())

@@ -83,10 +83,10 @@ if __name__ == "__main__":
     # train test split
     train_dataset, test_dataset, train_target, test_target = create_dataset(dataset, test_size=args.test_size)
 
-    x_labels = load_x_labels(configuration=args.configuration)
+    #x_labels = load_x_labels(configuration=args.configuration)
     #cross_validation
-    cross_validation_fn = partial(cross_validation, data=train_dataset, x_labels=x_labels,
-                                  y_label='label', optimization=True, test_size=args.test_size)
+    cross_validation_fn = partial(cross_validation, data=train_dataset,
+                                  y_label='label', optimization=True, test_size=args.test_size)   #x_labels=x_labels
 
     #filename = f'{model_name}'
     _ = optimization_process(cross_validation_fn, pbounds, env=args.env)
