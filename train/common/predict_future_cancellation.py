@@ -3,7 +3,7 @@ import argparse, config
 import pandas as pd
 from datetime import datetime, timedelta
 
-# 這個應該就不用了
+# 這個應該就不用了，跟run_prediction.py差不多功能
 
 def predict_future_cancellation(start_time,duration,df):
 

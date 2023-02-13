@@ -76,15 +76,15 @@ if __name__ == "__main__":
     set_configuration()
 
     pbounds = load_pbounds(algorithm=args.algorithm)
-
+    # load_training_data: 載入數據集
     dataset, _ = load_training_data(hotel_ids=args.hotel_ids, remove_business_booking=True)
 
     dataset.sort_values(by='check_in', inplace=True)
-
+    # train test split
     train_dataset, test_dataset, train_target, test_target = create_dataset(dataset, test_size=args.test_size)
 
     x_labels = load_x_labels(configuration=args.configuration)
-
+    #cross_validation
     cross_validation_fn = partial(cross_validation, data=train_dataset, x_labels=x_labels,
                                   y_label='label', optimization=True, test_size=args.test_size)
 
@@ -97,7 +97,7 @@ if __name__ == "__main__":
     else:
         hotel_id = None
         filename = 'unification'
-
+    #export_final_model
     export_final_model(dataset=dataset, test_size=args.test_size)
 
     export_final_model(dataset=train_dataset, test_size=args.test_size, evaluation=True)
