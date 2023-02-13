@@ -15,8 +15,8 @@ pbounds:
     learning_rate: (0.01, 0.1)  #(0.01, 0.1)
     min_child_samples: (2, 10)
     num_leaves: (15, 100)
-    min_df: (10, 30)
-    k: (80,512) #(80, 512)
+    #min_df: (10, 30)
+    k: (80,512) #(80, 512)   #select k best : 這邊設置的數字較大，所以可能沒有作用。他的做法是，假設我設定80，那我的特徵數處理過後要大於80他才會有起到作用
   logistic_regression:
     C: (0.0001, 10)
     k: (15,100)

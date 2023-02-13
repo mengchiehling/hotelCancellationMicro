@@ -1,6 +1,6 @@
 import pandas as pd
 
-
+#reindex():如果某个索引值当前不存在，就会引入缺失值
 def timeseries_prediction(df):
 
     date_list = df.index.tolist()

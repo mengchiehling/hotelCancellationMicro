@@ -16,7 +16,7 @@ def load_pbounds(algorithm: str):
 
     return pbounds
 
-#下面這個不需要了
+
 def load_x_labels(configuration: str):
 
     features_configuration = \

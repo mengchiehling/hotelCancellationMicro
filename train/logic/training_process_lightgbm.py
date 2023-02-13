@@ -90,7 +90,7 @@ def process(X: pd.Series, y: pd.Series, test_size: float, **kwargs):
 
     # For example, setting it to 100 means we stop the training if the predictions have not improved for
     # the last 100 rounds.
-    # https://stackoverflow.com/questions/40329576/sklearn-pass-fit-parameters-to-xgboost-in-pipeline/55711752#55711752
+    # 參考作法https://stackoverflow.com/questions/40329576/sklearn-pass-fit-parameters-to-xgboost-in-pipeline/55711752#55711752
 
     model.fit(X_train, y_train, model__eval_set=eval_set, model__callbacks=callbacks, model__eval_metric=['binary'])
 

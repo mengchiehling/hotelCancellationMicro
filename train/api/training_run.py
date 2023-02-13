@@ -27,7 +27,7 @@ def create_dataset(dataset: pd.DataFrame, test_size):
 
     return train_dataset, eval_dataset, train_target, eval_target
 
-
+#儲存模型
 def export_final_model(dataset, test_size: float, evaluation:bool=False):
 
     train_target = dataset['label']
