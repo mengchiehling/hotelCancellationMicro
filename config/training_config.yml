@@ -37,60 +37,24 @@ features_configuration:
 
   B:
     onehot: ['payment_type', 'nationality_code', 'gender', 'source', 'currency_code']
-    numerical: ['number_of_allpeople', 'total_stays_night', 'tax_rate', 'service_rate', 'price', 'if_comment']
+    numerical: ['number_of_allpeople', 'total_stays_night', 'tax_rate', 'service_rate', 'price',  'if_comment', 'lead_time']
 
   C:
-    onehot: ['payment_type', 'nationality_code', 'gender', 'source', 'currency_code']
-    numerical: ['number_of_allpeople', 'total_stays_night', 'tax_rate', 'service_rate', 'price', 'lead_time']
-
-  D:
-    onehot: ['payment_type', 'nationality_code', 'gender', 'source', 'currency_code']
-    numerical: ['number_of_allpeople', 'total_stays_night', 'tax_rate', 'service_rate', 'price',  'if_comment', 'lead_time']
-
-  E:
-    onehot: ['payment_type', 'nationality_code', 'gender', 'source', 'currency_code', 'season']
-    numerical: ['number_of_allpeople', 'total_stays_night', 'tax_rate', 'service_rate', 'price',  'if_comment', 'lead_time']
-
-  F:
-    onehot: ['payment_type', 'nationality_code', 'gender', 'source', 'currency_code', 'season', 'platform']
-    numerical: ['number_of_allpeople', 'total_stays_night', 'tax_rate', 'service_rate', 'price',  'if_comment', 'lead_time']
-
-  G:
     onehot: [ 'payment_type', 'nationality_code', 'gender', 'source', 'currency_code', 'season', 'platform' , 'check_in_month']
     numerical: [ 'number_of_allpeople', 'total_stays_night', 'tax_rate', 'service_rate', 'price',  'if_comment', 'lead_time' ]
 
-  H:
-    onehot: ['payment_type', 'nationality_code', 'gender', 'source', 'currency_code', 'season', 'platform', 'check_in_month','holiday']
-    numerical: ['number_of_allpeople', 'total_stays_night', 'tax_rate', 'service_rate', 'price', 'if_comment',  'lead_time']
-
-  I:
+  D:
     onehot: ['payment_type', 'nationality_code', 'gender', 'source', 'currency_code', 'season', 'platform', 'check_in_month','holiday','weekday']
     numerical: ['number_of_allpeople', 'total_stays_night', 'tax_rate', 'service_rate', 'price', 'if_comment',  'lead_time']
 
-  J:
-    onehot: ['payment_type', 'nationality_code', 'gender', 'source', 'currency_code', 'season', 'platform', 'check_in_month','holiday','weekday', 'type']
-    numerical: ['number_of_allpeople', 'total_stays_night', 'tax_rate', 'service_rate', 'price', 'if_comment',  'lead_time']
-
-  K:
-    onehot: ['payment_type', 'nationality_code', 'gender', 'source', 'currency_code', 'season', 'platform', 'check_in_month','holiday','weekday', 'type']
-    numerical: ['number_of_allpeople', 'total_stays_night', 'tax_rate', 'service_rate', 'price', 'if_comment',  'lead_time', 'lead_time_range']
-
-  L:
+  E:
     onehot: ['payment_type', 'nationality_code', 'gender', 'source', 'currency_code', 'season', 'platform', 'check_in_month','holiday','weekday', 'type', 's_vecation', 'w_vecation']
     numerical: ['number_of_allpeople', 'total_stays_night', 'tax_rate', 'service_rate', 'price', 'if_comment',  'lead_time']
 
-  M:
+  F:
     onehot: ['payment_type', 'nationality_code', 'gender', 'source', 'currency_code', 'season', 'platform', 'check_in_month','holiday','weekday', 'type', 'sp_date', 'midd', 'sallery', 'workingday', 'is_rest_day', 'vecation', 'is_event', 's_vecation', 'w_vecation']
     numerical: ['number_of_allpeople', 'total_stays_night', 'tax_rate', 'service_rate', 'price', 'if_comment',  'lead_time', 'lead_time_range', 'days2vecation', 'vecation_days']
 
-  N:
-    onehot: [ 'nationality_code', 'gender', 'source', 'season', 'platform' , 'check_in_month']
-    numerical: [ 'number_of_allpeople', 'total_stays_night', 'price',  'lead_time' ]
-
-  O:
-    onehot: ['nationality_code', 'gender', 'source', 'season', 'platform', 'check_in_month','holiday','weekday']
-    numerical: ['number_of_allpeople', 'total_stays_night', 'price', 'lead_time']
-
-  P:
-    onehot: [ 'nationality_code', 'gender', 'source', 'season', 'platform', 'check_in_month','holiday','weekday','midd', 'sallery', 'workingday', 'is_rest_day', 'vecation', 'is_event', 's_vecation', 'w_vecation' ]
-    numerical: [ 'number_of_allpeople', 'total_stays_night', 'price', 'lead_time', 'days2vecation', 'vecation_days' ]
+  G:
+    onehot: ['payment_type', 'nationality_code', 'gender', 'source', 'currency_code', 'season', 'platform', 'check_in_month','holiday']
+    numerical: ['number_of_allpeople', 'total_stays_night', 'tax_rate', 'service_rate', 'price', 'if_comment',  'lead_time']

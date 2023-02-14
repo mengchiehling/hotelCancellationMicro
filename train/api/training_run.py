@@ -10,7 +10,7 @@ from src.api import logger
 from src import config
 from src.io.path_definition import get_datafetch, get_file
 from src.io.load_model import load_model
-from src.common.tools import load_x_labels, load_pbounds, load_optimized_parameters, load_yaml_file
+from src.common.tools import  load_pbounds, load_optimized_parameters, load_yaml_file
 from train.common.optimization import optimization_process
 from train.common.model_selection import cross_validation
 from train.common.data_preparation import load_training_data
