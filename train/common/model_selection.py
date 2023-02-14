@@ -59,6 +59,28 @@ def cross_validation(data: pd.DataFrame,  y_label: str, optimization: bool,
         X_train = X[X['check_in'].isin(train_time)]
         X_test = X[X['check_in'].isin(test_time)]
 
+        '''
+        Problem:
+        X_train.groupby('status')['status'].count()
+        X_test.groupby('status')['status'].count()
+
+        # 訓練 - 驗證 統計分布不均衡
+        hotel_id 294
+
+        n_fold = 4
+        X_test:
+        CANCELED       233
+        CHECKED_OUT     53
+        NO_SHOW         15
+        UPCOMING        81
+
+        X_train:
+        CANCELED       2546
+        CHECKED_IN       12
+        CHECKED_OUT    5363
+        NO_SHOW         117
+        UPCOMING          7
+        '''
 
         y_train = X_train[y_label]
         y_test = X_test[y_label]

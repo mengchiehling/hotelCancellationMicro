@@ -1,6 +1,7 @@
 import argparse
 import os
 import joblib
+import numpy as np
 from functools import partial
 import importlib
 import pandas as pd
@@ -10,22 +11,44 @@ from src.api import logger
 from src import config
 from src.io.path_definition import get_datafetch, get_file
 from src.io.load_model import load_model
-from src.common.tools import  load_pbounds, load_optimized_parameters, load_yaml_file
+from src.common.tools import load_pbounds, load_optimized_parameters, load_yaml_file
 from train.common.optimization import optimization_process
 from train.common.model_selection import cross_validation
 from train.common.data_preparation import load_training_data
 #from train.logic.training_process_lightgbm import process
 #from train.common.evaluation import run_evaluation
 
+
 #等同於網路上的train_test_split步驟
 def create_dataset(dataset: pd.DataFrame, test_size):
 
     RANDOM_SEED = 42
-    y = dataset['label']
-    train_dataset, eval_dataset, train_target, eval_target = train_test_split(dataset, y,
-                                                                              test_size=test_size, shuffle=True,random_state=RANDOM_SEED)
+
+    unique_hotel_ids = np.unique(dataset['hotel_id'].values)
+
+    train_dataset_list = []
+    eval_dataset_list = []
+    train_target_list = []
+    eval_target_list = []
+
+    for hotel_id in unique_hotel_ids:
+        df_hotel = dataset[dataset['hotel_id']==hotel_id]
+        y = df_hotel['label']
+        train_dataset, eval_dataset, train_target, eval_target = train_test_split(df_hotel, y,
+                                                                                  test_size=test_size, shuffle=True,
+                                                                                  random_state=RANDOM_SEED)
+        train_dataset_list.append(train_dataset)
+        eval_dataset_list.append(eval_dataset)
+        train_target_list.append(train_target)
+        eval_target_list.append(eval_target)
+
+    train_dataset = pd.concat(train_dataset_list)
+    eval_dataset = pd.concat(eval_dataset_list)
+    train_target = pd.concat(train_target_list)
+    eval_target = pd.concat(eval_target_list)
 
     return train_dataset, eval_dataset, train_target, eval_target
+
 
 #儲存模型
 def export_final_model(dataset, test_size: float, evaluation:bool=False):
