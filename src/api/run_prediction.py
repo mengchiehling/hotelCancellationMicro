@@ -11,7 +11,6 @@ from src import config
 from src.io.path_definition import get_datafetch
 
 
-
 def load_model(hotel_id: Optional[int]):
 
     dir_ = os.path.join(get_datafetch(), 'model')

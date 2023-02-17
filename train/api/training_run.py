@@ -17,6 +17,7 @@ from train.common.data_preparation import load_training_data
 #from train.logic.training_process_lightgbm import process
 #from train.common.evaluation import run_evaluation
 
+
 #等同於網路上的train_test_split步驟
 def create_dataset(dataset: pd.DataFrame, test_size):
 
@@ -26,6 +27,7 @@ def create_dataset(dataset: pd.DataFrame, test_size):
                                                                               test_size=test_size, shuffle=True,random_state=RANDOM_SEED)
 
     return train_dataset, eval_dataset, train_target, eval_target
+
 
 #儲存模型
 def export_final_model(dataset, test_size: float, evaluation:bool=False):

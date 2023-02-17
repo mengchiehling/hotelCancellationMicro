@@ -4,6 +4,7 @@ from functools import partial
 from datetime import datetime
 from src.io.path_definition import get_datafetch
 
+
 def create_total_stays_night(df: pd.DataFrame):
 
     nums_of_stays_nights = pd.to_datetime(df.check_out) - pd.to_datetime(df.check_in)

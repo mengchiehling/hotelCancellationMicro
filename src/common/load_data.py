@@ -38,9 +38,6 @@ def retrieve_hyperparameter_files(algorithm: str, last: bool=False) -> List:
     return files
 
 
-
-
-
 def load_data() -> pd.DataFrame:
 
     filename = os.path.join(get_datafetch(), '訂單資料_20221229.csv')
@@ -56,7 +53,7 @@ def load_data() -> pd.DataFrame:
     filename = os.path.join(get_datafetch(), 'date_features.csv')
     date_features = pd.read_csv(filename)
     date_features['date'] = date_features['date'].apply(
-    lambda x: datetime.strptime(x, '%Y/%m/%d').strftime("%Y-%m-%d"))
+     lambda x: datetime.strptime(x, '%Y/%m/%d').strftime("%Y-%m-%d"))
     booking_data = booking_data.merge(date_features, how='left', left_on='check_in', right_on='date')
 
     filename = os.path.join(get_datafetch(), '房型資料_20221229.csv')
