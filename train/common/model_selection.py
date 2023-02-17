@@ -1,16 +1,15 @@
 import importlib
-from typing import Union, List
-from functools import partial
+from typing import Union
 
 import pandas as pd
 import numpy as np
-from sklearn.model_selection import StratifiedKFold, train_test_split, TimeSeriesSplit
+from sklearn.model_selection import TimeSeriesSplit
 from sklearn.metrics import accuracy_score
 
 from src import config
 
 
-def cross_validation(data: pd.DataFrame, x_labels: List[str], y_label: str, optimization: bool,
+def cross_validation(data: pd.DataFrame, y_label: str, optimization: bool,
                      test_size: float, **kwargs) -> Union[float, np.ndarray]:
 
     """
@@ -18,12 +17,10 @@ def cross_validation(data: pd.DataFrame, x_labels: List[str], y_label: str, opti
 
     Args:
         data: training data
-        x_labels: dataframe columns for features
         y_label: target vairable for supervised machine learning
         optimization: if it is a hyperparameter optimization process
         test_size: percentage of data size for algorithm early stopping
-        configuration: features configuration
-      len(eval_dataset)  kwargs: additional hyperparameters for the algorithm
+        kwargs: additional hyperparameters for the algorithm
     """
 
     module = importlib.import_module(f'train.logic.training_process_{config.algorithm}')
@@ -40,16 +37,10 @@ def cross_validation(data: pd.DataFrame, x_labels: List[str], y_label: str, opti
     idx = [t.strftime("%Y-%m-%d") for t in idx]
     date_feature = pd.DataFrame(data=np.zeros([len(idx), 1]), index=idx)
 
-
     y_pred = []
     y_true = []
 
-    # ToDo: Switch to time series split
-    #RANDOM_SEED = 42
-
     kfold = TimeSeriesSplit(n_splits=5, test_size=None, max_train_size=None)
-
-    #kfold = StratifiedKFold(n_splits=5, random_state=RANDOM_SEED, shuffle=True)
 
     for n_fold, (train_index, test_index) in enumerate(kfold.split(date_feature)):
 
@@ -81,9 +72,6 @@ def cross_validation(data: pd.DataFrame, x_labels: List[str], y_label: str, opti
         NO_SHOW         117
         UPCOMING          7
         '''
-
-
-
         y_train = X_train[y_label]
         y_test = X_test[y_label]
 
@@ -95,9 +83,9 @@ def cross_validation(data: pd.DataFrame, x_labels: List[str], y_label: str, opti
 
         print(f"fold {n_fold}: training: {train_time_begin} - {train_time_end}, testing: {test_time_begin} - {test_time_end}")
 
-        model = process(X_train[x_labels], y_train, test_size=test_size,  **kwargs)
+        model = process(X_train, y_train, test_size=test_size,  **kwargs)
 
-        y_temp = model.predict(X_test[x_labels])
+        y_temp = model.predict(X_test)
 
         y_true.extend(y_test.tolist())
         y_pred.extend(y_temp.tolist())
@@ -105,8 +93,8 @@ def cross_validation(data: pd.DataFrame, x_labels: List[str], y_label: str, opti
         print(accuracy_score(y_test, y_temp))
 
     acc = accuracy_score(np.array(y_true), np.array(y_pred))
-
     if optimization:
         return acc
     else:
         return np.array(y_pred)
+

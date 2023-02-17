@@ -17,21 +17,6 @@ def load_pbounds(algorithm: str):
     return pbounds
 
 
-def load_x_labels(configuration: str):
-
-    features_configuration = \
-    load_yaml_file(get_file(os.path.join('config', 'training_config.yml')))['features_configuration'][configuration]
-    x_labels = []
-    for key, values in features_configuration.items():
-        config.features_configuration[key] = values
-        if type(values) == str:
-            x_labels.append(values)
-        else:
-            x_labels += values
-
-    return x_labels
-
-
 def load_yaml_file(filepath: str):
 
     with open(filepath, 'r', encoding="utf-8") as stream:

@@ -5,25 +5,23 @@ import pandas as pd
 from src.common.tools import load_yaml_file
 from src.api import logger
 from src.common.load_data import load_data
-from src.common.feature_engineering import create_total_stays_night, create_number_of_allpeople, create_nationality_code, create_if_comment, create_check_in_month, stays_night_is_national_holiday, create_important_sp_date, stays_night_is_holiday ,stays_night_is_weekday, create_is_weekday
+from src.common.feature_engineering import create_total_stays_night, create_number_of_allpeople, \
+    create_nationality_code, create_if_comment, create_check_in_month, stays_night_is_national_holiday, \
+    create_important_sp_date, stays_night_is_holiday, stays_night_is_weekday, create_is_weekday
 from sklearn.impute import SimpleImputer
 from src import config
 
 
-def load_training_data(hotel_ids: Optional[List], remove_business_booking: bool=True) -> Tuple[pd.DataFrame, pd.Series]:
+def load_training_data(remove_business_booking: bool = True) -> Tuple[pd.DataFrame, pd.Series]:
 
-    '''
+    """
     Load sellout data as a pandas DataFrame
-    '''
+    """
 
     df = load_data()
 
-    if hotel_ids:
-        df = df[df['pms_hotel_id'].isin(hotel_ids)]
-
     if remove_business_booking:
         df = df[df["source"] != "BUSINESS_BOOKING"]
-
 
     # feature engineering:
     df = create_total_stays_night(df=df)
@@ -38,9 +36,8 @@ def load_training_data(hotel_ids: Optional[List], remove_business_booking: bool=
     df = stays_night_is_holiday(df=df)
     df = create_important_sp_date(df=df)
 
-
-    features_configuration = \
-    load_yaml_file(get_file(os.path.join('config', 'training_config.yml')))['features_configuration'][config.configuration]
+    filepath = get_file(os.path.join('config', 'training_config.yml'))
+    features_configuration = load_yaml_file(filepath)['features_configuration'][config.configuration]
     onehot = features_configuration['onehot']
     numerical = features_configuration['numerical']
 
@@ -48,6 +45,9 @@ def load_training_data(hotel_ids: Optional[List], remove_business_booking: bool=
 
     simpleimputer = SimpleImputer(strategy='most_frequent')
     df.loc[:, onehot] = simpleimputer.fit_transform(df[onehot])
+
+    # Remove UPCOMING
+    df = df[~(df['status'] == 'UPCOMING')]
 
     df['label'] = 0
     df.loc[df['status'] == 'CHECKED_IN', 'label'] = 0
