@@ -84,40 +84,39 @@ def run_timeseries_aggregation(df: pd.DataFrame, hotel_id: Optional[str] = None)
     df_grouped.to_csv(filepath)
 
 
-def run_evaluation(model, eval_dataset: pd.DataFrame, filename: str):
-    '''
+def run_evaluation(model, df: pd.DataFrame, filename: str):
+    """
     eval_dataset.groupby(by=["check_in", "hotel_id"])[["pred", 'label']].sum()
     :param model:
     :param eval_dataset:
     :param filename:
     :return:
-    '''
+    """
 
-    y_pred_proba = model.predict_proba(eval_dataset)
+    y_pred_proba = model.predict_proba(df)
     y_pred = (y_pred_proba[:, 1] > 0.5) * 1
-    eval_dataset['y_pred'] = y_pred
-    eval_dataset['y_pred_proba'] = y_pred_proba[:, 1]
+    df['y_pred'] = y_pred
+    df['y_pred_proba'] = y_pred_proba[:, 1]
     # y_pred = model.predict(eval_dataset)
-
 
     #全部旅館訂房模型表現
     logger.debug("全旅館")
-    eval_y = eval_dataset['label']
+    y_true = df['label']
     run_evaluation_log(y_true, y_pred, y_pred_proba[:, 1])
 
-    run_timeseries(eval_dataset)
+    run_timeseries_aggregation(df)
 
     #個別旅館
     unique_hotel_ids = np.unique(df['hotel_id'].values)
 
     for hotel_id in unique_hotel_ids:
         logger.debug(f"旅館-{hotel_id}")
-        eval_dataset = df[df['hotel_id']==hotel_id]
+        eval_dataset = df[df['hotel_id'] == hotel_id]
         eval_y = eval_dataset['label']
         y_pred = eval_dataset['y_pred']
         y_pred_proba = eval_dataset['y_pred_proba']
         run_evaluation_log(eval_y, y_pred, y_pred_proba)
-        run_timeseries(eval_dataset)
+        run_timeseries_aggregation(eval_dataset)
 
 
         # df_grouped = eval_dataset.groupby(by="check_in")[["pred", 'label']].sum()
@@ -129,8 +128,6 @@ def run_evaluation(model, eval_dataset: pd.DataFrame, filename: str):
         # df_grouped = timeseries_prediction(df_grouped)
         # run_mape_evaluation(df_grouped,"fill_zero")
         # df_grouped.to_csv(os.path.join(get_datafetch(), f'predictResult(fill zero)_{algorithm}_{hotel_id}_{config.configuration}.csv'))
-
-    '''
 
     # eval_y = eval_dataset['label']
     #
@@ -156,7 +153,7 @@ def run_evaluation(model, eval_dataset: pd.DataFrame, filename: str):
     # logger.debug(cm)
 
     # eval_dataset['pred'] = y_pred
-    df_grouped = eval_dataset.groupby(by="check_in")[["pred", 'label']].sum()
+    df_grouped = df.groupby(by="check_in")[["pred", 'label']].sum()
     algorithm = args.algorithm
     df_grouped.to_csv(os.path.join(get_datafetch(), f'predictResult(no fill zero)_{algorithm}_{filename}.csv'))
 
@@ -165,9 +162,9 @@ def run_evaluation(model, eval_dataset: pd.DataFrame, filename: str):
     run_mape_evaluation(df_grouped, "fill_zero")
     df_grouped.to_csv(os.path.join(get_datafetch(), f'predictResult(fill zero)_{algorithm}_{filename}.csv'))
 
-    eval_dataset['mismatch'] = (eval_dataset['pred'] != eval_dataset['label']).astype(int)
-    eval_dataset = eval_dataset[eval_dataset['mismatch'] == 1]
-    eval_dataset.to_csv(os.path.join(get_datafetch(), f'QA_{filename}.csv'))
+    df['mismatch'] = (df['pred'] != df['label']).astype(int)
+    df = df[df['mismatch'] == 1]
+    df.to_csv(os.path.join(get_datafetch(), f'QA_{filename}.csv'))
 
 
 def set_configuration():
@@ -195,7 +192,7 @@ if __name__ == "__main__":
 
     # x_labels = load_x_labels(configuration=args.configuration)
 
-    # filename = f'{model_name}'
+    filename = f'{model_name}'
 
     # if isinstance(args.hotel_ids, list):
     #     hotel_id = args.hotel_ids[0]
@@ -208,6 +205,6 @@ if __name__ == "__main__":
 
     # export_final_model(dataset=train_dataset, test_size=args.test_size, evaluation=True)
 
-    model = load_model(hotel_id=hotel_id)
+    model = load_model(hotel_id=None)
 
-    run_evaluation(model=model, eval_dataset=test_dataset, filename=filename)
+    run_evaluation(model=model, df=test_dataset, filename=filename)
