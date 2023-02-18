@@ -12,7 +12,7 @@ from src import config
 from src.io.path_definition import get_datafetch
 
 
-def retrieve_hyperparameter_files(algorithm: str, last: bool=False) -> List:
+def retrieve_hyperparameter_files(algorithm: str, last: bool = False) -> List:
 
     dir_ = os.path.join(get_datafetch(), 'optimization')
 
