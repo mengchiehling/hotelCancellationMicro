@@ -19,9 +19,9 @@ def create_number_of_allpeople(df: pd.DataFrame):
     df['adults'].fillna(0, inplace=True)
     df['children'].fillna(0, inplace=True)
     df["number_of_allpeople"] = df.adults + df.children
-    filter = (df.adults == 0) & (df.children == 0)
+    filter_ = (df.adults == 0) & (df.children == 0)
 
-    return df[~filter]
+    return df[~filter_]
 
 
 def create_nationality_code(df: pd.DataFrame):
@@ -63,9 +63,8 @@ def create_important_sp_date(df: pd.DataFrame):
     return df
 
 
-#入住日當中是否有遇到國定連假 (遇到幾次)
 def stays_night_is_national_holiday(df: pd.DataFrame):
-
+    # 入住日當中是否有遇到國定連假 (遇到幾次)
     filename = os.path.join(get_datafetch(), '有影響的國定假日表格(到2023年底).csv')
     create_national_holiday_name = pd.read_csv(filename)
     #create_vecation_name['date'] = create_vecation_name['date'].apply(
@@ -91,14 +90,13 @@ def create_is_national_holiday(x, all_holidays):
     n = 0
     for d in acc_range:
         if d in all_holidays:
-         n += 1
+            n += 1
 
     return n
 
 
-#入住日當中是否有遇到五六也就是假日 (遇到幾次)
 def stays_night_is_holiday(df: pd.DataFrame):
-
+    # 入住日當中是否有遇到五六也就是假日 (遇到幾次)
     #all_holidays = df['date'].values.tolist()
     #all_holidays = [datetime.strptime(c, "%Y-%m-%d") for c in all_holidays]
     #all_holidays = create_vecation_name['date'].values
@@ -126,9 +124,8 @@ def _stay_night_is_holiday_fn(x):
     return n
 
 
-#與working day不太一樣，working day是指六日為非工作日，一到五為需要工作日。而create is weekday是對應holiday，指一二三四日為weekday，五六為holiday
 def create_is_weekday(df: pd.DataFrame):
-
+    # 與working day不太一樣，working day是指六日為非工作日，一到五為需要工作日。而create is weekday是對應holiday，指一二三四日為weekday，五六為holiday
     df['create_is_weekday'] = 1
     df.loc[df['weekday'] == '4', 'create_is_weekday'] = 0
     df.loc[df['weekday'] == '5', 'create_is_weekday'] = 0
@@ -136,9 +133,8 @@ def create_is_weekday(df: pd.DataFrame):
     return df
 
 
-#入住日當中是否有遇到一二三四日也就是平日 (遇到幾次)
 def stays_night_is_weekday(df: pd.DataFrame):
-
+    # 入住日當中是否有遇到一二三四日也就是平日 (遇到幾次)
     #all_holidays = create_is_weekday
     #all_holidays = df['date'].values.tolist()
     #all_holidays = [datetime.strptime(c, "%Y-%m-%d") for c in all_holidays]

@@ -9,17 +9,7 @@ import numpy as np
 
 from src import config
 from src.io.path_definition import get_datafetch
-
-
-def load_model(hotel_id: Optional[int]):
-
-    dir_ = os.path.join(get_datafetch(), 'model')
-    if hotel_id is not None:
-        model = joblib.load(os.path.join(dir_, f'micro_{config.configuration}_{hotel_id}.sav'))
-    else:
-        model = joblib.load(os.path.join(dir_, f'micro_{config.configuration}_unification.sav'))
-
-    return model
+from src.io.load_model import load_model
 
 
 def set_configuration():
@@ -29,9 +19,9 @@ def set_configuration():
     config.configuration = args.configuration
 
 
-def run_prediction(model, eval_dataset: pd.DataFrame):
+def run_prediction(model_, eval_dataset: pd.DataFrame):
 
-    y_pred_proba = model.predict_proba(eval_dataset)
+    y_pred_proba = model_.predict_proba(eval_dataset)
     y_pred = (y_pred_proba[:,1] > 0.5) * 1
 
     eval_dataset['pred'] = y_pred
@@ -73,4 +63,4 @@ if __name__ == "__main__":
     dataset, _ = load_training_data(hotel_ids=[args.hotel_id], remove_business_booking=True)
     pred_dataset = dataset[dataset['check_in'].isin(idx)]
 
-    run_prediction(model=model, eval_dataset=pred_dataset)
+    run_prediction(model_=model, eval_dataset=pred_dataset)

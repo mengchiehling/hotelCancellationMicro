@@ -4,7 +4,6 @@ from typing import Union
 import numpy as np
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
-#from lightgbm import LGBMClassifier, early_stopping, log_evaluation
 from sklearn.feature_selection import chi2, SelectKBest
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OneHotEncoder
@@ -38,21 +37,22 @@ def build_transformer_pipeline(stats=None) -> Union[ColumnTransformer, Pipeline]
     return feature_transformer
 
 
-def process(X: pd.Series, y: pd.Series, test_size: float, **kwargs):
+def process(x: pd.Series, y: pd.Series, test_size: float, **kwargs):
     '''
     For binary classfication, choose objective='binary'
-    :param X:
+    :param x:
     :param y:
     :param test_size:
     :param kwargs:
     :return:
     '''
-    RANDOM_SEED = 42
+    random_seed = 42
     feature_extractor = build_transformer_pipeline(stats=chi2)
 
     model =  Pipeline([('feature_extractor', feature_extractor),
-                       ('model', LogisticRegression(penalty='elasticnet', random_state=RANDOM_SEED, class_weight=config.class_weight,
-                                                      n_jobs=1, solver='saga'))
+                       ('model', LogisticRegression(penalty='elasticnet', random_state=random_seed,
+                                                    class_weight=config.class_weight,
+                                                    n_jobs=1, solver='saga'))
                        ])
 
     k = kwargs.get('k', None)
@@ -61,34 +61,30 @@ def process(X: pd.Series, y: pd.Series, test_size: float, **kwargs):
         model.set_params(**{f"feature_extractor__feature_selector__k": k})
 
     l1_ratio = kwargs.get('l1_ratio')
-    C = kwargs['C']
-
+    c = kwargs['C']
 
     model.set_params(**{"model__l1_ratio": l1_ratio,
-                        "model__C": C
+                        "model__C": c
                         })
 
-    #ToDo
     y = y.astype(np.int32).values
-    X_train = X.copy()
+    x_train = x.copy()
     y_train = y.copy()
-
-    #callbacks = [early_stopping(stopping_rounds=100), log_evaluation(period=100)]
 
     try:
         model_temp = Pipeline(model.steps[:-1])
-        model_temp.fit_transform(X_train, y_train)
-        eval_set = [(model_temp.transform(X_train), y_train)]
+        model_temp.fit_transform(x_train, y_train)
+        # eval_set = [(model_temp.transform(x_train), y_train)]
     except ValueError:
         model.set_params(**{f"feature_extractor__feature_selector__k": 'all'})
-        model_temp = Pipeline(model.steps[:-1])
-        model_temp.fit_transform(X_train, y_train)
-        eval_set = [(model_temp.transform(X_train), y_train)]
+        # model_temp = Pipeline(model.steps[:-1])
+        # model_temp.fit_transform(x_train, y_train)
+        # eval_set = [(model_temp.transform(x_train), y_train)]
 
     # For example, setting it to 100 means we stop the training if the predictions have not improved for
     # the last 100 rounds.
     # https://stackoverflow.com/questions/40329576/sklearn-pass-fit-parameters-to-xgboost-in-pipeline/55711752#55711752
 
-    model.fit(X_train, y_train)
+    model.fit(x_train, y_train)
 
     return model

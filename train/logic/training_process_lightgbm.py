@@ -37,20 +37,21 @@ def build_transformer_pipeline(stats=None) -> Union[ColumnTransformer, Pipeline]
     return feature_transformer
 
 
-def process(X: pd.Series, y: pd.Series, test_size: float, **kwargs):
-    '''
+def process(x: pd.Series, y: pd.Series, test_size: float, **kwargs):
+    """
     For binary classfication, choose objective='binary'
-    :param X:
+    :param x:
     :param y:
     :param test_size:
     :param kwargs:
     :return:
-    '''
-    RANDOM_SEED = 42
+    """
+    random_seed = 42
     feature_extractor = build_transformer_pipeline(stats=chi2)
 
     model =  Pipeline([('feature_extractor', feature_extractor),
-                       ('model', LGBMClassifier(boosting_type='gbdt', random_state=RANDOM_SEED, class_weight=config.class_weight,
+                       ('model', LGBMClassifier(boosting_type='gbdt', random_state=random_seed,
+                                                class_weight=config.class_weight,
                                                 n_estimators=3000, objective='binary', n_jobs=1))
                        ])
 
@@ -72,26 +73,25 @@ def process(X: pd.Series, y: pd.Series, test_size: float, **kwargs):
                         "model__num_leaves": num_leaves,
                         })
 
-    #ToDo
     y = y.astype(np.int32).values
-    X_train, X_val, y_train, y_val = train_test_split(X, y, stratify=y, test_size=test_size, random_state=RANDOM_SEED)
+    x_train, x_val, y_train, y_val = train_test_split(x, y, stratify=y, test_size=test_size, random_state=random_seed)
 
     callbacks = [early_stopping(stopping_rounds=100), log_evaluation(period=100)]
 
     try:
         model_temp = Pipeline(model.steps[:-1])
-        model_temp.fit_transform(X_train, y_train)
-        eval_set = [(model_temp.transform(X_val), y_val)]
+        model_temp.fit_transform(x_train, y_train)
+        eval_set = [(model_temp.transform(x_val), y_val)]
     except ValueError:
         model.set_params(**{f"feature_extractor__feature_selector__k": 'all'})
         model_temp = Pipeline(model.steps[:-1])
-        model_temp.fit_transform(X_train, y_train)
-        eval_set = [(model_temp.transform(X_val), y_val)]
+        model_temp.fit_transform(x_train, y_train)
+        eval_set = [(model_temp.transform(x_val), y_val)]
 
     # For example, setting it to 100 means we stop the training if the predictions have not improved for
     # the last 100 rounds.
     # 參考作法https://stackoverflow.com/questions/40329576/sklearn-pass-fit-parameters-to-xgboost-in-pipeline/55711752#55711752
 
-    model.fit(X_train, y_train, model__eval_set=eval_set, model__callbacks=callbacks, model__eval_metric=['binary'])
+    model.fit(x_train, y_train, model__eval_set=eval_set, model__callbacks=callbacks, model__eval_metric=['binary'])
 
     return model
