@@ -1,13 +1,12 @@
 import os
 import argparse
-from src import config
+
 import matplotlib.pyplot as plt
-from typing import Optional
-import joblib
-import numpy as np
 import pandas as pd
 from sklearn.metrics import accuracy_score, f1_score, recall_score, precision_score, confusion_matrix, \
     mean_absolute_percentage_error, roc_auc_score, roc_curve
+
+from src import config
 from train.common.timeseries_prediction import timeseries_prediction
 from src.api import logger
 from src.io.path_definition import get_datafetch
@@ -16,12 +15,8 @@ from train.api.training_run import create_dataset
 from src.io.load_model import load_model
 
 
-
-
 def run_mape_evaluation(df: pd.DataFrame, pic_name):
 
-    #df_grouped = df.groupby(by="check_in")[["pred", 'label']].sum()
-    #df_grouped = timeseries_prediction(df_grouped)
     y_true = df['label'].values
     y_pred = df['pred'].values
 
@@ -31,18 +26,17 @@ def run_mape_evaluation(df: pd.DataFrame, pic_name):
 
     plt.plot(y_true, color="red", label="The actual number of canceled orders")
     plt.plot(y_pred, color="blue", label="The predict number of canceled orders")
-    #plt.title("Hotel 294 canceled orders prediction: LinearSVC")
     plt.xlabel("Check in date")
     plt.ylabel("Canceled orders")
     plt.legend()
     plt.savefig(f"{pic_name}.png")
 
 
-def run_evaluation(model, eval_dataset: pd.DataFrame, filename: str):
+def run_evaluation(model_, eval_dataset: pd.DataFrame, filename: str):
 
-    y_pred_proba = model.predict_proba(eval_dataset)
+    y_pred_proba = model_.predict_proba(eval_dataset)
     y_pred = (y_pred_proba[:,1] > 0.5) * 1
-    #y_pred = model.predict(eval_dataset)
+    # y_pred = model.predict(eval_dataset)
 
     eval_y = eval_dataset['label']
 
@@ -84,9 +78,10 @@ def run_evaluation(model, eval_dataset: pd.DataFrame, filename: str):
 
 def set_configuration():
 
-    config.algorithm = args.algorithm #'lightgbm'
+    config.algorithm = args.algorithm
     config.hotel_ids = args.hotel_ids
     config.configuration = args.configuration
+
 
 if __name__ == "__main__":
 
@@ -106,10 +101,6 @@ if __name__ == "__main__":
 
     train_dataset, test_dataset, train_target, test_target = create_dataset(dataset, test_size=args.test_size)
 
-    #x_labels = load_x_labels(configuration=args.configuration)
-
-    #filename = f'{model_name}'
-
     if isinstance(args.hotel_ids, list):
         hotel_id = args.hotel_ids[0]
         filename= str(hotel_id)
@@ -117,10 +108,6 @@ if __name__ == "__main__":
         hotel_id = None
         filename = 'unification'
 
-    #export_final_model(dataset=dataset, test_size=args.test_size)
-
-    #export_final_model(dataset=train_dataset, test_size=args.test_size, evaluation=True)
-
     model = load_model(hotel_id=hotel_id)
 
-    run_evaluation(model=model, eval_dataset=test_dataset, filename=filename)
+    run_evaluation(model_=model, eval_dataset=test_dataset, filename=filename)

@@ -21,19 +21,20 @@ def optimization_process(fn, pbounds: Dict, env: str) -> Tuple[Dict, np.ndarray]
     Args:
         fn: functional that will be optimized
         pbounds: a dictionary having the boundary of parameters of fn
+        env
     Returns:
         A tuple of dictionary containing optimized hyperparameters and oof-predictions
     """
 
     training_config = load_yaml_file(get_file(os.path.join('config', 'training_config.yml')))
 
-    bayesianOptimization = training_config['bayesianOptimization'][env]
+    bayesianoptimization = training_config['bayesianOptimization'][env]
 
-    RANDOM_SEED = 42
+    random_seed = 42
     optimizer = BayesianOptimization(
         f=fn,
         pbounds=pbounds,
-        random_state=RANDOM_SEED)
+        random_state=random_seed)
 
     export_form = datetime.now().strftime("%Y%m%d-%H%M")
 
@@ -52,19 +53,18 @@ def optimization_process(fn, pbounds: Dict, env: str) -> Tuple[Dict, np.ndarray]
         logs = f"{optimization_file_dir}/logs_{algorithm}_{config.configuration}_unification_{export_form}.json"
         search_pattern = 'logs_' + algorithm + f"_{config.configuration}" + "_unification_[\d]{8}-[\d]{4}.json"
 
-
     res = [f for f in os.listdir(optimization_file_dir) if re.search(search_pattern, f)]
     previous_logs = [os.path.join(optimization_file_dir, f) for f in res]
 
     if previous_logs:
         load_logs(optimizer, logs=previous_logs)
-        bayesianOptimization['init_points'] = 0
+        bayesianoptimization['init_points'] = 0
 
     logger = JSONLogger(path=logs)
     optimizer.subscribe(Events.OPTIMIZATION_STEP, logger)
 
     optimizer.maximize(
-        **bayesianOptimization
+        **bayesianoptimization
     )
     optimized_parameters = optimizer.max['params']
 

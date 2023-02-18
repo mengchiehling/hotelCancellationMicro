@@ -18,44 +18,43 @@ from train.common.data_preparation import load_training_data
 #from train.common.evaluation import run_evaluation
 
 
-#等同於網路上的train_test_split步驟
-def create_dataset(dataset: pd.DataFrame, test_size):
+def create_dataset(dataset_: pd.DataFrame, test_size):
+    # 等同於網路上的train_test_split步驟
+    random_seed = 42
+    y = dataset_['label']
+    train_dataset_, eval_dataset, train_target_, eval_target = train_test_split(dataset_, y,
+                                                                                test_size=test_size, shuffle=True,
+                                                                                random_state=random_seed)
 
-    RANDOM_SEED = 42
-    y = dataset['label']
-    train_dataset, eval_dataset, train_target, eval_target = train_test_split(dataset, y,
-                                                                              test_size=test_size, shuffle=True,random_state=RANDOM_SEED)
-
-    return train_dataset, eval_dataset, train_target, eval_target
+    return train_dataset_, eval_dataset, train_target_, eval_target
 
 
-#儲存模型
-def export_final_model(dataset, test_size: float, evaluation:bool=False):
-
-    train_target = dataset['label']
+def export_final_model(dataset_, test_size: float, evaluation: bool = False):
+    # 儲存模型
+    train_target_ = dataset_['label']
 
     params, _ = load_optimized_parameters(algorithm=args.algorithm)
 
     module = importlib.import_module(f'train.logic.training_process_{config.algorithm}')
     process = getattr(module, 'process')
 
-    model = process(dataset, train_target, test_size=test_size, **params)
+    model = process(dataset_, train_target_, test_size=test_size, **params)
     dir_ = os.path.join(get_datafetch(), 'model')
     if not os.path.isdir(dir_):
         os.makedirs(dir_)
 
     if evaluation:
-        filename = os.path.join(dir_, f'{args.algorithm}_{config.configuration}_{hotel_id}_evaluation.sav')
+        filename_ = os.path.join(dir_, f'{args.algorithm}_{config.configuration}_{hotel_id}_evaluation.sav')
     else:
-        filename = os.path.join(dir_, f'{args.algorithm}_{config.configuration}_{hotel_id}.sav')
+        filename_ = os.path.join(dir_, f'{args.algorithm}_{config.configuration}_{hotel_id}.sav')
 
-    joblib.dump(model, filename)
+    joblib.dump(model, filename_)
 
 
 def set_configuration():
 
     config.class_weight = args.class_weight
-    config.algorithm =  args.algorithm  #'lightgbm'
+    config.algorithm = args.algorithm
     config.hotel_ids = args.hotel_ids
     config.configuration = args.configuration
 
@@ -91,12 +90,9 @@ if __name__ == "__main__":
     # train test split
     train_dataset, test_dataset, train_target, test_target = create_dataset(dataset, test_size=args.test_size)
 
-    #x_labels = load_x_labels(configuration=args.configuration)
-    #cross_validation
     cross_validation_fn = partial(cross_validation, data=train_dataset,
-                                  y_label='label', optimization=True, test_size=args.test_size)   #x_labels=x_labels
+                                  y_label='label', optimization=True, test_size=args.test_size)
 
-    #filename = f'{model_name}'
     _ = optimization_process(cross_validation_fn, pbounds, env=args.env)
 
     if isinstance(args.hotel_ids, list):
@@ -105,9 +101,9 @@ if __name__ == "__main__":
     else:
         hotel_id = None
         filename = 'unification'
-    #export_final_model
-    export_final_model(dataset=dataset, test_size=args.test_size)
+    # export_final_model
+    export_final_model(dataset_=dataset, test_size=args.test_size)
 
-    export_final_model(dataset=train_dataset, test_size=args.test_size, evaluation=True)
+    export_final_model(dataset_=train_dataset, test_size=args.test_size, evaluation=True)
 
 

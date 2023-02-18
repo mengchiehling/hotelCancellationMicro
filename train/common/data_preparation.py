@@ -38,10 +38,9 @@ def load_training_data(hotel_ids: Optional[List], remove_business_booking: bool=
     # 以下兩個是互補的，可擇一
     df = stays_night_is_holiday(df=df)
     df = stays_night_is_weekday(df=df)
+    file_path = get_file(os.path.join('config', 'training_config.yml'))
+    features_configuration = load_yaml_file(file_path)['features_configuration'][config.configuration]
 
-
-    features_configuration = \
-    load_yaml_file(get_file(os.path.join('config', 'training_config.yml')))['features_configuration'][config.configuration]
     onehot = features_configuration['onehot']
     numerical = features_configuration['numerical']
 
@@ -49,7 +48,6 @@ def load_training_data(hotel_ids: Optional[List], remove_business_booking: bool=
 
     simpleimputer = SimpleImputer(strategy='most_frequent')
     df.loc[:, onehot] = simpleimputer.fit_transform(df[onehot])
-
 
     df['label'] = 0
     df.loc[df['status'] == 'CHECKED_IN', 'label'] = 0
