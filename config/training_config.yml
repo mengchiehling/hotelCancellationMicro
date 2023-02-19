@@ -17,9 +17,9 @@ pbounds:
     num_leaves: (15, 100)
     k: (80,512)
   logistic_regression:
-    C: (0.0001, 10)
-    k: (15,100)
-    l1_ratio: (0, 1)
+    C: (0.0001, 1)
+    l1_ratio: (0.0001, 1)
+    k: (80,512)
   xgboost:
     reg_alpha: (0.1, 10)
     reg_lambda: (0.1, 10)
@@ -32,6 +32,7 @@ pbounds:
     max_depth: (1, 5)
     min_samples_split: (2, 10)
     min_samples_leaf: (1, 10)
+    k: (80,512)
 
 features_configuration:
   A:

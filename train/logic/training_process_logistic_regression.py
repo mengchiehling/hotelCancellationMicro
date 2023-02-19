@@ -63,8 +63,8 @@ def process(x: pd.Series, y: pd.Series, test_size: float, **kwargs):
     l1_ratio = kwargs.get('l1_ratio')
     c = kwargs['C']
 
-    model.set_params(**{"model__l1_ratio": l1_ratio,
-                        "model__C": c
+    model.set_params(**{
+                        "model__C": c, "model__l1_ratio": l1_ratio
                         })
 
     y = y.astype(np.int32).values
