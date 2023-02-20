@@ -1,10 +1,11 @@
 import os
 import yaml
-
+import numpy as np
 from src.api import logger
 from src import config
 from src.io.path_definition import get_file
 from src.common.load_data import retrieve_hyperparameter_files
+from sklearn.model_selection import train_test_split
 
 
 def load_pbounds(algorithm: str):
@@ -15,21 +16,6 @@ def load_pbounds(algorithm: str):
         pbounds[key] = eval(value)
 
     return pbounds
-
-#限制哪些feature可以放到模型內
-#def load_x_labels(configuration: str):
-
-    #features_configuration = \
-    #load_yaml_file(get_file(os.path.join('config', 'training_config.yml')))['features_configuration'][configuration]
-    #x_labels = []
-    #for key, values in features_configuration.items():
-        #config.features_configuration[key] = values
-        #if type(values) == str:
-            #x_labels.append(values)
-        #else:
-            #x_labels += values
-
-    #return x_labels
 
 
 def load_yaml_file(filepath: str):
@@ -61,7 +47,23 @@ def load_optimized_parameters(algorithm: str, last: bool=False):
                     params = data['params']
 
     return params, target_max
-#
-# if __name__ == "__main__":
-#
-#     load_optimized_parameters(algorithm='unification')
+
+
+def timeseries_train_test_split(df, test_size):
+
+    # 切法1
+    # date_feature = create_fictitous_date(df)
+    # train_time, eval_time = train_test_split(date_feature, test_size=test_size, shuffle=False)
+    # train_dataset = df[df['check_in'].isin(train_time.index)]
+    # eval_dataset = df[df['check_in'].isin(eval_time.index)]
+    # train_target = train_dataset['label']
+    # eval_target = eval_dataset['label']
+
+    # 切法2
+    train_time, test_time = train_test_split(np.unique(df['check_in']), test_size=test_size, shuffle=True, random_state=0)
+    train_dataset = df[df['check_in'].isin(train_time)]
+    eval_dataset = df[df['check_in'].isin(test_time)]
+    train_target = train_dataset['label']
+    eval_target = eval_dataset['label']
+
+    return train_dataset, eval_dataset, train_target, eval_target

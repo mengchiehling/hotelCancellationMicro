@@ -10,29 +10,25 @@ from src.api import logger
 from src import config
 from src.io.path_definition import get_datafetch, get_file
 from src.io.load_model import load_model
-from src.common.tools import  load_pbounds, load_optimized_parameters, load_yaml_file
+from src.common.tools import load_pbounds, load_optimized_parameters, load_yaml_file, timeseries_train_test_split
 from train.common.optimization import optimization_process
 from train.common.model_selection import cross_validation
 from train.common.data_preparation import load_training_data
-#from train.logic.training_process_lightgbm import process
-#from train.common.evaluation import run_evaluation
 
 
 def create_dataset(dataset_: pd.DataFrame, test_size):
     # 等同於網路上的train_test_split步驟
     random_seed = 42
     y = dataset_['label']
-    train_dataset_, eval_dataset, train_target_, eval_target = train_test_split(dataset_, y,
-                                                                                test_size=test_size, shuffle=True,
-                                                                                random_state=random_seed)
-    '''
+
     if config.ts_split:
-        執行timeseries_train_test_split
+        train_dataset_, eval_dataset, train_target_, eval_target = timeseries_train_test_split(dataset_,
+                                                                                               test_size=test_size)
     else:
         train_dataset_, eval_dataset, train_target_, eval_target = train_test_split(dataset_, y,
                                                                                     test_size=test_size, shuffle=True,
                                                                                     random_state=random_seed)
-    '''
+
     return train_dataset_, eval_dataset, train_target_, eval_target
 
 
