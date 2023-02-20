@@ -25,7 +25,14 @@ def create_dataset(dataset_: pd.DataFrame, test_size):
     train_dataset_, eval_dataset, train_target_, eval_target = train_test_split(dataset_, y,
                                                                                 test_size=test_size, shuffle=True,
                                                                                 random_state=random_seed)
-
+    '''
+    if config.ts_split:
+        執行timeseries_train_test_split
+    else:
+        train_dataset_, eval_dataset, train_target_, eval_target = train_test_split(dataset_, y,
+                                                                                    test_size=test_size, shuffle=True,
+                                                                                    random_state=random_seed)
+    '''
     return train_dataset_, eval_dataset, train_target_, eval_target
 
 
@@ -57,6 +64,7 @@ def set_configuration():
     config.algorithm = args.algorithm
     config.hotel_ids = args.hotel_ids
     config.configuration = args.configuration
+    config.ts_split = args.ts_split
 
     features_configuration = \
         load_yaml_file(get_file(os.path.join('config', 'training_config.yml')))['features_configuration'][
@@ -77,6 +85,7 @@ if __name__ == "__main__":
     parser.add_argument('--hotel_ids', nargs='+', type=int, help='hotel ids')
     parser.add_argument('--class_weight', type=str)
     parser.add_argument('--algorithm', type=str)
+    parser.add_argument('--ts_split', action='store_true')
 
     args = parser.parse_args()
 
