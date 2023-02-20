@@ -81,6 +81,7 @@ def set_configuration():
     config.algorithm = args.algorithm
     config.hotel_ids = args.hotel_ids
     config.configuration = args.configuration
+    config.ts_split = args.ts_split
 
 
 if __name__ == "__main__":
@@ -93,6 +94,7 @@ if __name__ == "__main__":
     parser.add_argument('--configuration', type=str, help='"A", please check config/training_config.yml')
     parser.add_argument('--hotel_ids', nargs='+', type=int, help='hotel ids')
     parser.add_argument('--algorithm', type=str)
+    parser.add_argument('--ts_split', action='store_true')
     args = parser.parse_args()
 
     set_configuration()

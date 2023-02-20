@@ -47,8 +47,12 @@ def optimization_process(fn, pbounds: Dict, env: str) -> Tuple[Dict, np.ndarray]
     algorithm = config.algorithm
 
     if isinstance(hotel_ids, list):
-        logs = f"{optimization_file_dir}/logs_{algorithm}_{config.configuration}_{hotel_ids[0]}_{export_form}.json"
-        search_pattern = 'logs_' + algorithm + f"_{config.configuration}" + f"_{hotel_ids[0]}"+ "_[\d]{8}-[\d]{4}.json"
+        if config.ts_split:
+            logs = f"{optimization_file_dir}/logs_{algorithm}_{config.configuration}_tssplit_{hotel_ids[0]}_{export_form}.json"
+            search_pattern = 'logs_' + algorithm + f"_{config.configuration}" + f"_tssplit_{hotel_ids[0]}"+ "_[\d]{8}-[\d]{4}.json"
+        else:
+            logs = f"{optimization_file_dir}/logs_{algorithm}_{config.configuration}_{hotel_ids[0]}_{export_form}.json"
+            search_pattern = 'logs_' + algorithm + f"_{config.configuration}" + f"_{hotel_ids[0]}" + "_[\d]{8}-[\d]{4}.json"
     else:
         logs = f"{optimization_file_dir}/logs_{algorithm}_{config.configuration}_unification_{export_form}.json"
         search_pattern = 'logs_' + algorithm + f"_{config.configuration}" + "_unification_[\d]{8}-[\d]{4}.json"
