@@ -61,7 +61,13 @@ def load_data() -> pd.DataFrame:
     room_type_data1 = room_type_data.set_index(["room_type_id"])['type'].to_dict()
     booking_data['type'] = booking_data['pms_room_type_id'].map(room_type_data1)
 
-    #booking_data.fillna(0, inplace=True)
+    # Attach the hotel information
+    filename = os.path.join(get_datafetch(), 'hotel_info.csv')
+    hotel_data = pd.read_csv(filename, index_col=0, encoding='utf-8')
+    # 這邊要寫pms hotel id ,還是hotel id
+    booking_data = booking_data.join(hotel_data, how='left', on='pms_hotel_id')
+    booking_data.dropna(subset=['所在縣市'], inplace=True)
 
     return booking_data
+
 

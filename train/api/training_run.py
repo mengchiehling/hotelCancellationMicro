@@ -46,10 +46,22 @@ def export_final_model(dataset_, test_size: float, evaluation: bool = False):
     if not os.path.isdir(dir_):
         os.makedirs(dir_)
 
-    if evaluation:
-        filename_ = os.path.join(dir_, f'{args.algorithm}_{config.configuration}_{hotel_id}_evaluation.sav')
+    if config.ts_split:
+        basic_filename = os.path.join(dir_, f"{config.algorithm}_{config.configuration}_tssplit")
     else:
-        filename_ = os.path.join(dir_, f'{args.algorithm}_{config.configuration}_{hotel_id}.sav')
+        basic_filename = os.path.join(dir_, f"{config.algorithm}_{config.configuration}")
+
+    hotel_ids = config.hotel_ids
+
+    if isinstance(hotel_ids, list):
+        basic_filename = basic_filename + "_unification"
+    else:
+        basic_filename = basic_filename + f"_{hotel_ids[0]}"
+
+    if evaluation:
+        filename_ = basic_filename + "_evaluation.sav"
+    else:
+        filename_ = basic_filename + ".sav"
 
     joblib.dump(model, filename_)
 

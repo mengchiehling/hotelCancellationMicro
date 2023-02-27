@@ -46,6 +46,7 @@ def optimization_process(fn, pbounds: Dict, env: str) -> Tuple[Dict, np.ndarray]
     hotel_ids = config.hotel_ids
     algorithm = config.algorithm
 
+    # 是否為單一間旅店
     if isinstance(hotel_ids, list):
         if config.ts_split:
             logs = f"{optimization_file_dir}/logs_{algorithm}_{config.configuration}_tssplit_{hotel_ids[0]}_{export_form}.json"
@@ -54,8 +55,12 @@ def optimization_process(fn, pbounds: Dict, env: str) -> Tuple[Dict, np.ndarray]
             logs = f"{optimization_file_dir}/logs_{algorithm}_{config.configuration}_{hotel_ids[0]}_{export_form}.json"
             search_pattern = 'logs_' + algorithm + f"_{config.configuration}" + f"_{hotel_ids[0]}" + "_[\d]{8}-[\d]{4}.json"
     else:
-        logs = f"{optimization_file_dir}/logs_{algorithm}_{config.configuration}_unification_{export_form}.json"
-        search_pattern = 'logs_' + algorithm + f"_{config.configuration}" + "_unification_[\d]{8}-[\d]{4}.json"
+        if config.ts_split:
+            logs = f"{optimization_file_dir}/logs_{algorithm}_{config.configuration}_tssplit_unification_{export_form}.json"
+            search_pattern = 'logs_' + algorithm + f"_{config.configuration}" + "_tssplit_unification_[\d]{8}-[\d]{4}.json"
+        else:
+            logs = f"{optimization_file_dir}/logs_{algorithm}_{config.configuration}_unification_{export_form}.json"
+            search_pattern = 'logs_' + algorithm + f"_{config.configuration}" + "_unification_[\d]{8}-[\d]{4}.json"
 
     res = [f for f in os.listdir(optimization_file_dir) if re.search(search_pattern, f)]
     previous_logs = [os.path.join(optimization_file_dir, f) for f in res]
