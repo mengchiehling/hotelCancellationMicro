@@ -20,7 +20,7 @@ def load_pbounds(algorithm: str):
 
 def load_yaml_file(filepath: str):
 
-    with open(filepath, 'r') as stream:
+    with open(filepath, 'r', encoding='utf-8') as stream:
         map_ = yaml.safe_load(stream)
 
     return map_

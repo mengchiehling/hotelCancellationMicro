@@ -1,6 +1,7 @@
 import argparse
 import os
 import joblib
+import numpy as np
 from functools import partial
 import importlib
 import pandas as pd
@@ -20,14 +21,34 @@ def create_dataset(dataset_: pd.DataFrame, test_size):
     # 等同於網路上的train_test_split步驟
     random_seed = 42
     y = dataset_['label']
+    unique_hotel_ids = np.unique(dataset_['pms_hotel_id'].values)
 
-    if config.ts_split:
-        train_dataset_, eval_dataset, train_target_, eval_target = timeseries_train_test_split(dataset_,
+    train_dataset_list = []
+    eval_dataset_list = []
+    train_target_list = []
+    eval_target_list = []
+
+    for hotel_id in unique_hotel_ids:
+
+        df_hotel = dataset_[dataset_['pms_hotel_id'] == hotel_id]
+        y = df_hotel['label']
+
+        if config.ts_split:
+            train_dataset_, eval_dataset, train_target_, eval_target = timeseries_train_test_split(df_hotel,
                                                                                                test_size=test_size)
-    else:
-        train_dataset_, eval_dataset, train_target_, eval_target = train_test_split(dataset_, y,
+        else:
+            train_dataset_, eval_dataset, train_target_, eval_target = train_test_split(df_hotel, y,
                                                                                     test_size=test_size, shuffle=True,
                                                                                     random_state=random_seed)
+        train_dataset_list.append(train_dataset_)
+        eval_dataset_list.append(eval_dataset)
+        train_target_list.append(train_target_)
+        eval_target_list.append(eval_target)
+
+    train_dataset_ = pd.concat(train_dataset_list)
+    eval_dataset = pd.concat(eval_dataset_list)
+    train_target_ = pd.concat(train_target_list)
+    eval_target = pd.concat(eval_target_list)
 
     return train_dataset_, eval_dataset, train_target_, eval_target
 
@@ -54,9 +75,9 @@ def export_final_model(dataset_, test_size: float, evaluation: bool = False):
     hotel_ids = config.hotel_ids
 
     if isinstance(hotel_ids, list):
-        basic_filename = basic_filename + "_unification"
-    else:
         basic_filename = basic_filename + f"_{hotel_ids[0]}"
+    else:
+        basic_filename = basic_filename + "_unification"
 
     if evaluation:
         filename_ = basic_filename + "_evaluation.sav"
