@@ -23,13 +23,17 @@ def run_mape_evaluation(df: pd.DataFrame, pic_name):
     y_pred = df['y_pred'].values
 
     mape = mean_absolute_percentage_error(y_true + 1, y_pred + 1)
-
     logger.debug("MAPE值: {:.2f}".format(mape))
 
-    plt.plot(y_true, color="red", label="The actual number of canceled orders")
-    plt.plot(y_pred, color="blue", label="The predict number of canceled orders")
-    plt.xlabel("Check in date")
-    plt.ylabel("Canceled orders")
+    y_abs_diff = np.abs(y_true - y_pred)
+    wmape = y_abs_diff.sum() / y_true.sum()
+    logger.debug("WMAPE值: {:.2f}".format(wmape))
+
+    fig, ax = plt.subplots()
+    ax.plot(y_true, color="red", label="The actual number of canceled orders")
+    ax.plot(y_pred, color="blue", label="The predict number of canceled orders")
+    ax.set_xlabel("Check in date")
+    ax.set_ylabel("Canceled orders")
     plt.legend()
     plt.savefig(f"{pic_name}.png")
 
