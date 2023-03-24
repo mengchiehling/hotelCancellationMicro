@@ -15,11 +15,22 @@ from src.io.path_definition import get_datafetch
 def retrieve_hyperparameter_files(algorithm: str, last: bool = False) -> List:
 
     dir_ = os.path.join(get_datafetch(), 'optimization')
+    hotel_ids = config.hotel_ids
 
-    if isinstance(config.hotel_ids, list):
-        search_pattern = 'logs_' + algorithm + f"_{config.configuration}_{config.hotel_ids[0]}" + "_[\d]{8}-[\d]{4}.json"
+    if isinstance(hotel_ids, list):
+        if config.ts_split:
+
+            search_pattern = 'logs_' + algorithm + f"_{config.configuration}" + f"_tssplit_{hotel_ids[0]}"+ "_[\d]{8}-[\d]{4}.json"
+        else:
+
+            search_pattern = 'logs_' + algorithm + f"_{config.configuration}" + f"_{hotel_ids[0]}" + "_[\d]{8}-[\d]{4}.json"
     else:
-        search_pattern = 'logs_' + algorithm + f"_{config.configuration}" + "_unification_[\d]{8}-[\d]{4}.json"
+        if config.ts_split:
+
+            search_pattern = 'logs_' + algorithm + f"_{config.configuration}" + "_tssplit_unification_[\d]{8}-[\d]{4}.json"
+        else:
+
+            search_pattern = 'logs_' + algorithm + f"_{config.configuration}" + "_unification_[\d]{8}-[\d]{4}.json"
 
     logger.debug(f"retrieve file pattern {search_pattern}")
 
@@ -67,7 +78,8 @@ def load_data() -> pd.DataFrame:
     # 這邊要寫pms hotel id ,還是hotel id
     booking_data = booking_data.join(hotel_data, how='left', on='pms_hotel_id')
     booking_data.dropna(subset=['所在縣市'], inplace=True)
-
+    booking_data['date_filter'] = pd.to_datetime(booking_data['date'])
+    booking_data = booking_data[booking_data['date_filter'] < pd.to_datetime('2022-12-29')]
     return booking_data
 
 

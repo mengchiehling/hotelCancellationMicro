@@ -9,9 +9,17 @@ def load_model(hotel_id: Optional[int]):
 
     algorithm = config.algorithm
     dir_ = os.path.join(get_datafetch(), 'model')
-    if hotel_id is not None:
-        model = joblib.load(os.path.join(dir_, f'{algorithm}_{config.configuration}_{hotel_id}_evaluation.sav'))
-    else:
-        model = joblib.load(os.path.join(dir_, f'{algorithm}_{config.configuration}_unification_evaluation.sav'))
 
+    if hotel_id is not None:
+        if config.ts_split:
+            model = joblib.load(os.path.join(dir_, f'{algorithm}_{config.configuration}_tssplit_{hotel_id}_evaluation.sav'))
+        else:
+            model = joblib.load(
+                os.path.join(dir_, f'{algorithm}_{config.configuration}_{hotel_id}_evaluation.sav'))
+    else:
+        if config.ts_split:
+            model = joblib.load(os.path.join(dir_, f'{algorithm}_{config.configuration}_tssplit_unification_evaluation.sav'))
+        else:
+            model = joblib.load(
+                os.path.join(dir_, f'{algorithm}_{config.configuration}_unification_evaluation.sav'))
     return model
