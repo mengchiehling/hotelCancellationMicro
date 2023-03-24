@@ -60,7 +60,7 @@ def timeseries_train_test_split(df, test_size):
     # eval_target = eval_dataset['label']
 
     # 切法2
-    train_time, test_time = train_test_split(np.unique(df['check_in']), test_size=test_size, shuffle=True, random_state=0)
+    train_time, test_time = train_test_split(np.unique(df['check_in']), test_size=test_size, shuffle=False, random_state=0)
     train_dataset = df[df['check_in'].isin(train_time)]
     eval_dataset = df[df['check_in'].isin(test_time)]
     train_target = train_dataset['label']
