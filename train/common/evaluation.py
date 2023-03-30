@@ -112,7 +112,7 @@ def run_evaluation(model_, df: pd.DataFrame, filename: str):
     df['y_pred'] = y_pred
     df['y_pred_proba'] = y_pred_proba[:, 1]
     class_weight = model_._final_estimator.class_weight
-    df[['y_pred_proba','label']].to_csv(os.path.join(get_datafetch(), f'預測結果的機率_{class_weight}.csv'))
+    df[['y_pred_proba','label','check_in']].to_csv(os.path.join(get_datafetch(), f'預測結果的機率_{class_weight}.csv'))
     # 全部旅館訂房模型表現
     logger.debug("全旅館")
     y_true = df['label']
