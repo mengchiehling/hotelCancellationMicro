@@ -79,6 +79,9 @@ def export_final_model(dataset_, test_size: float, evaluation: bool = False):
     else:
         basic_filename = basic_filename + "_unification"
 
+    if config.class_weight:
+        basic_filename = basic_filename + f"_{config.class_weight}"
+
     if evaluation:
         filename_ = basic_filename + "_evaluation.sav"
     else:

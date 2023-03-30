@@ -10,16 +10,23 @@ def load_model(hotel_id: Optional[int]):
     algorithm = config.algorithm
     dir_ = os.path.join(get_datafetch(), 'model')
 
-    if hotel_id is not None:
-        if config.ts_split:
-            model = joblib.load(os.path.join(dir_, f'{algorithm}_{config.configuration}_tssplit_{hotel_id}_evaluation.sav'))
-        else:
-            model = joblib.load(
-                os.path.join(dir_, f'{algorithm}_{config.configuration}_{hotel_id}_evaluation.sav'))
+    if config.ts_split:
+        basic_filename = os.path.join(dir_, f"{config.algorithm}_{config.configuration}_tssplit")
     else:
-        if config.ts_split:
-            model = joblib.load(os.path.join(dir_, f'{algorithm}_{config.configuration}_tssplit_unification_evaluation.sav'))
-        else:
-            model = joblib.load(
-                os.path.join(dir_, f'{algorithm}_{config.configuration}_unification_evaluation.sav'))
+        basic_filename = os.path.join(dir_, f"{config.algorithm}_{config.configuration}")
+
+    hotel_ids = config.hotel_ids
+
+    if isinstance(hotel_ids, list):
+        basic_filename = basic_filename + f"_{hotel_ids[0]}"
+    else:
+        basic_filename = basic_filename + "_unification"
+
+    if config.class_weight:
+        basic_filename = basic_filename + f"_{config.class_weight}"
+
+
+    filename_ = basic_filename + "_evaluation.sav"
+    model = joblib.load(filename_)
+
     return model

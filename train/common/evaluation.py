@@ -111,7 +111,8 @@ def run_evaluation(model_, df: pd.DataFrame, filename: str):
 
     df['y_pred'] = y_pred
     df['y_pred_proba'] = y_pred_proba[:, 1]
-
+    class_weight = model_._final_estimator.class_weight
+    df[['y_pred_proba','label']].to_csv(os.path.join(get_datafetch(), f'預測結果的機率_{class_weight}.csv'))
     # 全部旅館訂房模型表現
     logger.debug("全旅館")
     y_true = df['label']
@@ -156,6 +157,7 @@ def set_configuration():
     config.hotel_ids = args.hotel_ids
     config.configuration = args.configuration
     config.ts_split = args.ts_split
+    config.class_weight = args.class_weight
 
 
 if __name__ == "__main__":
@@ -169,6 +171,7 @@ if __name__ == "__main__":
     parser.add_argument('--hotel_ids', nargs='+', type=int, help='hotel ids')
     parser.add_argument('--algorithm', type=str)
     parser.add_argument('--ts_split', action='store_true')
+    parser.add_argument('--class_weight', type=str)
     args = parser.parse_args()
 
     set_configuration()
