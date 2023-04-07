@@ -23,11 +23,11 @@ def run_mape_evaluation(df: pd.DataFrame, pic_name):
     y_pred = df['y_pred'].values
 
     mape = mean_absolute_percentage_error(y_true + 1, y_pred + 1)
-    logger.debug("MAPE值: {:.2f}".format(mape))
+    logger.debug("{} MAPE值: {:.2f}".format(pic_name, mape))
 
     y_abs_diff = np.abs(y_true - y_pred)
     wmape = y_abs_diff.sum() / y_true.sum()
-    logger.debug("WMAPE值: {:.2f}".format(wmape))
+    logger.debug("{} WMAPE值: {:.2f}".format(pic_name, wmape))
 
     fig, ax = plt.subplots()
     ax.plot(y_true, color="red", label="The actual number of canceled orders")
@@ -111,7 +111,11 @@ def run_evaluation(model_, df: pd.DataFrame, filename: str):
 
     df['y_pred'] = y_pred
     df['y_pred_proba'] = y_pred_proba[:, 1]
-    class_weight = model_._final_estimator.class_weight
+    final_estimator = model_._final_estimator
+    if hasattr(final_estimator, 'class_weight'):
+        class_weight = model_._final_estimator.class_weight
+    else:
+        class_weight = 'None'
     df[['y_pred_proba','label','check_in']].to_csv(os.path.join(get_datafetch(), f'預測結果的機率_{class_weight}.csv'))
     # 全部旅館訂房模型表現
     logger.debug("全旅館")
@@ -129,22 +133,22 @@ def run_evaluation(model_, df: pd.DataFrame, filename: str):
         y_pred = eval_dataset['y_pred']
         y_pred_proba = eval_dataset['y_pred_proba']
         run_evaluation_log(eval_y, y_pred, y_pred_proba)
-        run_timeseries_aggregation(eval_dataset)
-    print("\n")
-    df_grouped = df.groupby(by="check_in")[["y_pred", 'label']].sum()
-    algorithm = args.algorithm
-    if config.ts_split:
-        df_grouped.to_csv(os.path.join(get_datafetch(), f'predictResult(no fill zero)_tssplit_{algorithm}_{filename}_{config.configuration}.csv'))
-        run_mape_evaluation(df_grouped,"no_fill_zero")
-        df_grouped = timeseries_prediction(df_grouped)
-        run_mape_evaluation(df_grouped,"fill_zero")
-        df_grouped.to_csv(os.path.join(get_datafetch(), f'predictResult(fill zero)_tssplit_{algorithm}_{filename}_{config.configuration}.csv'))
-    else:
-        df_grouped.to_csv(os.path.join(get_datafetch(), f'predictResult(no fill zero)_{algorithm}_{filename}_{config.configuration}.csv'))
-        run_mape_evaluation(df_grouped,"no_fill_zero")
-        df_grouped = timeseries_prediction(df_grouped)
-        run_mape_evaluation(df_grouped,"fill_zero")
-        df_grouped.to_csv(os.path.join(get_datafetch(), f'predictResult(fill zero)_{algorithm}_{filename}_{config.configuration}.csv'))
+        run_timeseries_aggregation(eval_dataset,str(hotel_id))
+    # print("\n")
+    # df_grouped = df.groupby(by="check_in")[["y_pred", 'label']].sum()
+    # algorithm = args.algorithm
+    # if config.ts_split:
+    #     df_grouped.to_csv(os.path.join(get_datafetch(), f'predictResult(no fill zero)_tssplit_{algorithm}_{filename}_{config.configuration}.csv'))
+    #     run_mape_evaluation(df_grouped,"no_fill_zero")
+    #     df_grouped = timeseries_prediction(df_grouped)
+    #     run_mape_evaluation(df_grouped,"fill_zero")
+    #     df_grouped.to_csv(os.path.join(get_datafetch(), f'predictResult(fill zero)_tssplit_{algorithm}_{filename}_{config.configuration}.csv'))
+    # else:
+    #     df_grouped.to_csv(os.path.join(get_datafetch(), f'predictResult(no fill zero)_{algorithm}_{filename}_{config.configuration}.csv'))
+    #     run_mape_evaluation(df_grouped,"no_fill_zero")
+    #     df_grouped = timeseries_prediction(df_grouped)
+    #     run_mape_evaluation(df_grouped,"fill_zero")
+    #     df_grouped.to_csv(os.path.join(get_datafetch(), f'predictResult(fill zero)_{algorithm}_{filename}_{config.configuration}.csv'))
 
     df['mismatch'] = (df['y_pred'] != df['label']).astype(int)
     df = df[df['mismatch'] == 1]
