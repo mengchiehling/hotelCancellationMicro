@@ -23,11 +23,11 @@ def run_mape_evaluation(df: pd.DataFrame, pic_name):
     y_pred = df['y_pred'].values
 
     mape = mean_absolute_percentage_error(y_true + 1, y_pred + 1)
-    logger.debug("{} MAPE值: {:.2f}".format(pic_name, mape))
+    logger.debug("{} MAPE值: {:.4f}".format(pic_name, mape))
 
     y_abs_diff = np.abs(y_true - y_pred)
     wmape = y_abs_diff.sum() / y_true.sum()
-    logger.debug("{} WMAPE值: {:.2f}".format(pic_name, wmape))
+    logger.debug("{} WMAPE值: {:.4f}".format(pic_name, wmape))
 
     fig, ax = plt.subplots()
     ax.plot(y_true, color="red", label="The actual number of canceled orders")
@@ -47,15 +47,15 @@ def run_evaluation_log(y_true, y_pred, y_pred_proba):
     cm = confusion_matrix(y_true, y_pred)
     auc = roc_auc_score(y_true, y_pred_proba)
 
-    logger.debug("測試準確度: {:.2f}".format(acc))
+    logger.debug("測試準確度: {:.4f}".format(acc))
     logger.debug("-----------------------------")
-    logger.debug("F1值: {:.2f}".format(f1))
+    logger.debug("F1值: {:.4f}".format(f1))
     logger.debug("-----------------------------")
-    logger.debug("Recall值: {:.2f}".format(recall))
+    logger.debug("Recall值: {:.4f}".format(recall))
     logger.debug("-----------------------------")
-    logger.debug("Precision值: {:.2f}".format(precision))
+    logger.debug("Precision值: {:.4f}".format(precision))
     logger.debug("-----------------------------")
-    logger.debug("AUC值: {:.2f}".format(auc))
+    logger.debug("AUC值: {:.4f}".format(auc))
     logger.debug("-----------------------------")
     logger.debug("混淆矩陣如下: ")
     logger.debug("\n")
