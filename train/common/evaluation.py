@@ -29,9 +29,6 @@ def run_mape_evaluation(df: pd.DataFrame, pic_name):
     wmape = y_abs_diff.sum() / y_true.sum()
     logger.debug("{} WMAPE值: {:.4f}".format(pic_name, wmape))
 
-    mae = mean_absolute_error(y_true, y_pred)
-    logger.debug("{} MAE值: {:.4f}".format(pic_name, mae))
-
     fig, ax = plt.subplots()
     ax.plot(y_true, color="red", label="The actual number of canceled orders")
     ax.plot(y_pred, color="blue", label="The predict number of canceled orders")
