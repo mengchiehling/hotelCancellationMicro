@@ -6,7 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 from sklearn.metrics import accuracy_score, f1_score, recall_score, precision_score, confusion_matrix, \
-    mean_absolute_percentage_error, roc_auc_score, roc_curve
+    mean_absolute_percentage_error, roc_auc_score, roc_curve, mean_absolute_error
 
 from src import config
 from train.common.timeseries_prediction import timeseries_prediction
@@ -28,6 +28,9 @@ def run_mape_evaluation(df: pd.DataFrame, pic_name):
     y_abs_diff = np.abs(y_true - y_pred)
     wmape = y_abs_diff.sum() / y_true.sum()
     logger.debug("{} WMAPE值: {:.4f}".format(pic_name, wmape))
+
+    mae = mean_absolute_error(y_true, y_pred)
+    logger.debug("{} MAE值: {:.4f}".format(pic_name, mae))
 
     fig, ax = plt.subplots()
     ax.plot(y_true, color="red", label="The actual number of canceled orders")
