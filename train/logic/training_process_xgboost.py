@@ -46,12 +46,16 @@ def process(x: pd.Series, y: pd.Series, test_size: float, **kwargs):
     :param kwargs:
     :return:
     """
+    positive_records = y.sum()
+    negative_records = len(y) - positive_records
+    spw = negative_records / positive_records
+
     random_seed = 42
     feature_extractor = build_transformer_pipeline(stats=chi2)
 
     model = Pipeline([('feature_extractor', feature_extractor),
                        ('model', XGBClassifier( random_state=random_seed,
-                                                n_estimators=3000, objective='binary:logistic', n_jobs=1))
+                                                n_estimators=3000, objective='binary:logistic', scale_pos_weight=spw,n_jobs=1))
                        ])
 
     k = kwargs.get('k', None)
