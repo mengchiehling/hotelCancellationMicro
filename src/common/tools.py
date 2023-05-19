@@ -82,26 +82,41 @@ def chi2(dataset: pd.DataFrame, column: str):
     :return:
     """
 
+    unique_categories = np.unique(dataset[column])
+    kept_categories = []
+    for category in unique_categories:
+        if dataset[dataset[column] == category]['label'].nunique() != 1:
+            kept_categories.append(category)
+
+    dataset = dataset[dataset[column].isin(kept_categories)]
+
+    if len(dataset) == 0:
+        return 0, 0
+
     df_group = dataset.groupby([column, 'label']).agg(count=('label', 'count')).reset_index()
 
     count_of_label_1 = df_group[df_group['label'] == 1]['count'].sum()
     count_of_label_2 = df_group[df_group['label'] == 0]['count'].sum()
 
-    for category in np.unique(dataset[column]):
+    for category in kept_categories:
 
         df_group.loc[(df_group[column] == category) & (df_group['label'] == 1), 'expectation'] = \
             count_of_label_1 / (df_group['count'].sum()) * \
             df_group[df_group[column] == category]['count'].sum()
-        
+
         df_group.loc[(df_group[column] == category) & (df_group['label'] == 0), 'expectation'] = \
             count_of_label_2 / (df_group['count'].sum()) * \
             df_group[df_group[column] == category]['count'].sum()
+    # df = (n_col - 1) * (n_row - 1)
+    # df = n_col * n_row - n_col - n_row + 1
+
+    # chisquare, df = k - 1 - ddof
 
     ddof = 2 + len(np.unique(dataset[column])) - 2
 
     chisq, p = chisquare(df_group['count'].values, df_group['expectation'].values, ddof=ddof)
 
-    return chisq, p
+    return chisq, np.round(p, 7)
 
 
 def chi2_pipeline(dataset: pd.DataFrame) -> pd.DataFrame:
@@ -109,7 +124,10 @@ def chi2_pipeline(dataset: pd.DataFrame) -> pd.DataFrame:
     data = []
 
     for c in config.features_configuration['onehot']:
-        chisq, p = chi2(dataset=dataset, column=c)
+        try:
+            chisq, p = chi2(dataset=dataset, column=c)
+        except ValueError:
+            chi2(dataset=dataset, column=c)
         data.append((c, chisq, p))
 
     df = pd.DataFrame(data=data, columns=['feature', 'chi2', 'p'])
