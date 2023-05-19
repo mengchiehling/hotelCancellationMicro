@@ -1,6 +1,10 @@
 import os
 import yaml
+
+import pandas as pd
 import numpy as np
+from scipy.stats import chisquare
+
 from src.api import logger
 from src import config
 from src.io.path_definition import get_file
@@ -67,3 +71,47 @@ def timeseries_train_test_split(df, test_size):
     eval_target = eval_dataset['label']
 
     return train_dataset, eval_dataset, train_target, eval_target
+
+
+def chi2(dataset: pd.DataFrame, column: str):
+
+    """
+    Reference: https://www.youtube.com/watch?v=rpKzq64GA9Y
+    :param dataset:
+    :param column:
+    :return:
+    """
+
+    df_group = dataset.groupby([column, 'label']).agg(count=('label', 'count')).reset_index()
+
+    count_of_label_1 = df_group[df_group['label'] == 1]['count'].sum()
+    count_of_label_2 = df_group[df_group['label'] == 0]['count'].sum()
+
+    for category in np.unique(dataset[column]):
+
+        df_group.loc[(df_group[column] == category) & (df_group['label'] == 1), 'expectation'] = \
+            count_of_label_1 / (df_group['count'].sum()) * \
+            df_group[df_group[column] == category]['count'].sum()
+        
+        df_group.loc[(df_group[column] == category) & (df_group['label'] == 0), 'expectation'] = \
+            count_of_label_2 / (df_group['count'].sum()) * \
+            df_group[df_group[column] == category]['count'].sum()
+
+    ddof = 2 + len(np.unique(dataset[column])) - 2
+
+    chisq, p = chisquare(df_group['count'].values, df_group['expectation'].values, ddof=ddof)
+
+    return chisq, p
+
+
+def chi2_pipeline(dataset: pd.DataFrame) -> pd.DataFrame:
+
+    data = []
+
+    for c in config.features_configuration['onehot']:
+        chisq, p = chi2(dataset=dataset, column=c)
+        data.append((c, chisq, p))
+
+    df = pd.DataFrame(data=data, columns=['feature', 'chi2', 'p'])
+
+    return df
