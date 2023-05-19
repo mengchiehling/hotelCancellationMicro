@@ -59,7 +59,7 @@ def create_check_in_month(df: pd.DataFrame):
 def create_important_sp_date(df: pd.DataFrame):
 
     df.loc[df['sp_date'].isin(['白色情人節', '西洋情人節', '七夕情人節','父親節','母親節','聖誕節']), "important_sp_date"] = 1
-
+    df['important_sp_date'].fillna(0, inplace=True)
     return df
 
 
@@ -127,8 +127,8 @@ def _stay_night_is_holiday_fn(x):
 def create_is_weekday(df: pd.DataFrame):
     # 與working day不太一樣，working day是指六日為非工作日，一到五為需要工作日。而create is weekday是對應holiday，指一二三四日為weekday，五六為holiday
     df['create_is_weekday'] = 1
-    df.loc[df['weekday'] == '4', 'create_is_weekday'] = 0
-    df.loc[df['weekday'] == '5', 'create_is_weekday'] = 0
+    df.loc[df['weekday'] == 4, 'create_is_weekday'] = 0
+    df.loc[df['weekday'] == 5, 'create_is_weekday'] = 0
 
     return df
 
