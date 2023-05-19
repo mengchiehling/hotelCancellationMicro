@@ -55,7 +55,6 @@ features_configuration:
     numerical: ['number_of_allpeople', 'total_stays_night', 'tax_rate', 'service_rate', 'price', 'if_comment',  'lead_time', 'stay_night_is_national_holiday','stay_night_is_holiday','stay_night_is_weekday']
 
   Z:
-    onehot: ['nationality_code', 'gender', 'source', 'season', 'platform', 'check_in_month','holiday','weekday','midd',
-              'sallery', 'workingday', 'is_rest_day', 'vecation', 'is_event', 's_vecation', 'w_vecation',
+    onehot: ['payment_type', 'nationality_code', 'gender', 'source', 'new_currency_code', 'season', 'platform', 'check_in_month','holiday','weekday','important_sp_date','create_is_weekday',
               '所在縣市', '旅店類型']
-    numerical: [ 'number_of_allpeople', 'total_stays_night', 'price', 'lead_time', 'days2vecation', 'vecation_days', '房間數']
+    numerical: [ 'number_of_allpeople', 'total_stays_night', 'tax_rate', 'service_rate', 'price', 'if_comment', 'lead_time', 'stay_night_is_national_holiday', 'stay_night_is_holiday','stay_night_is_weekday', '房間數']
