@@ -6,7 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 from sklearn.metrics import accuracy_score, f1_score, recall_score, precision_score, confusion_matrix, \
-    mean_absolute_percentage_error, roc_auc_score, roc_curve
+    mean_absolute_percentage_error, roc_auc_score, roc_curve, mean_absolute_error
 
 from src import config
 from train.common.timeseries_prediction import timeseries_prediction
@@ -23,11 +23,11 @@ def run_mape_evaluation(df: pd.DataFrame, pic_name):
     y_pred = df['y_pred'].values
 
     mape = mean_absolute_percentage_error(y_true + 1, y_pred + 1)
-    logger.debug("{} MAPE值: {:.2f}".format(pic_name, mape))
+    logger.debug("{} MAPE值: {:.4f}".format(pic_name, mape))
 
     y_abs_diff = np.abs(y_true - y_pred)
     wmape = y_abs_diff.sum() / y_true.sum()
-    logger.debug("{} WMAPE值: {:.2f}".format(pic_name, wmape))
+    logger.debug("{} WMAPE值: {:.4f}".format(pic_name, wmape))
 
     fig, ax = plt.subplots()
     ax.plot(y_true, color="red", label="The actual number of canceled orders")
@@ -47,15 +47,15 @@ def run_evaluation_log(y_true, y_pred, y_pred_proba):
     cm = confusion_matrix(y_true, y_pred)
     auc = roc_auc_score(y_true, y_pred_proba)
 
-    logger.debug("測試準確度: {:.2f}".format(acc))
+    logger.debug("測試準確度: {:.4f}".format(acc))
     logger.debug("-----------------------------")
-    logger.debug("F1值: {:.2f}".format(f1))
+    logger.debug("F1值: {:.4f}".format(f1))
     logger.debug("-----------------------------")
-    logger.debug("Recall值: {:.2f}".format(recall))
+    logger.debug("Recall值: {:.4f}".format(recall))
     logger.debug("-----------------------------")
-    logger.debug("Precision值: {:.2f}".format(precision))
+    logger.debug("Precision值: {:.4f}".format(precision))
     logger.debug("-----------------------------")
-    logger.debug("AUC值: {:.2f}".format(auc))
+    logger.debug("AUC值: {:.4f}".format(auc))
     logger.debug("-----------------------------")
     logger.debug("混淆矩陣如下: ")
     logger.debug("\n")
@@ -116,7 +116,9 @@ def run_evaluation(model_, df: pd.DataFrame, filename: str):
         class_weight = model_._final_estimator.class_weight
     else:
         class_weight = 'None'
-    df[['y_pred_proba', 'label', 'check_in']].to_csv(os.path.join(get_datafetch(), f'預測結果的機率_{class_weight}.csv'))
+
+    df[['y_pred_proba','label','check_in']].to_csv(os.path.join(get_datafetch(), f'預測結果的機率_{class_weight}.csv'))
+
     # 全部旅館訂房模型表現
     logger.debug("全旅館")
     y_true = df['label']
@@ -133,22 +135,7 @@ def run_evaluation(model_, df: pd.DataFrame, filename: str):
         y_pred = eval_dataset['y_pred']
         y_pred_proba = eval_dataset['y_pred_proba']
         run_evaluation_log(eval_y, y_pred, y_pred_proba)
-        run_timeseries_aggregation(eval_dataset, hotel_id=hotel_id)
-    # print("\n")
-    # df_grouped = df.groupby(by="check_in")[["y_pred", 'label']].sum()
-    # algorithm = args.algorithm
-    # if config.ts_split:
-    #     df_grouped.to_csv(os.path.join(get_datafetch(), f'predictResult(no fill zero)_tssplit_{algorithm}_{filename}_{config.configuration}.csv'))
-    #     run_mape_evaluation(df_grouped,"no_fill_zero")
-    #     df_grouped = timeseries_prediction(df_grouped)
-    #     run_mape_evaluation(df_grouped,"fill_zero")
-    #     df_grouped.to_csv(os.path.join(get_datafetch(), f'predictResult(fill zero)_tssplit_{algorithm}_{filename}_{config.configuration}.csv'))
-    # else:
-    #     df_grouped.to_csv(os.path.join(get_datafetch(), f'predictResult(no fill zero)_{algorithm}_{filename}_{config.configuration}.csv'))
-    #     run_mape_evaluation(df_grouped,"no_fill_zero")
-    #     df_grouped = timeseries_prediction(df_grouped)
-    #     run_mape_evaluation(df_grouped,"fill_zero")
-    #     df_grouped.to_csv(os.path.join(get_datafetch(), f'predictResult(fill zero)_{algorithm}_{filename}_{config.configuration}.csv'))
+        run_timeseries_aggregation(eval_dataset,str(hotel_id))
 
     df['mismatch'] = (df['y_pred'] != df['label']).astype(int)
     df = df[df['mismatch'] == 1]
